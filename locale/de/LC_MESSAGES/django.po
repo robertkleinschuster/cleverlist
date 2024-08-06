@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-06 14:05+0200\n"
+"POT-Creation-Date: 2024-08-06 15:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,9 +22,13 @@ msgstr ""
 msgid "Home"
 msgstr "Start"
 
-#: inventory/admin.py:24
+#: inventory/admin.py:25
 msgid "Number of products"
 msgstr "Anzahl der Produkte"
+
+#: inventory/admin.py:43
+msgid "Sum of stock"
+msgstr "Bestand"
 
 #: inventory/apps.py:8
 msgid "Inventory"
@@ -54,6 +58,14 @@ msgstr "Bestand"
 #: inventory/models.py:30 inventory/models.py:31
 msgid "Product Stock"
 msgstr "Bestand"
+
+#: inventory/models.py:38
+msgid "Product with stock"
+msgstr "Produktbestand"
+
+#: inventory/models.py:39
+msgid "Products with stock"
+msgstr "Produktbestand"
 
 #: master/apps.py:8
 msgid "Master Data"

@@ -29,3 +29,12 @@ class ProductStock(models.Model):
     class Meta:
         verbose_name = _("Product Stock")
         verbose_name_plural = _("Product Stock")
+
+
+class ProductWithStock(Product):
+    pass
+
+    class Meta:
+        verbose_name = _("Product with stock"),
+        verbose_name_plural = _("Products with stock")
+        proxy = True

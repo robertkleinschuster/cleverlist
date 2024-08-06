@@ -1,8 +1,9 @@
 from django.contrib import admin
 
-from inventory.models import Location, ProductStock
-from django.db.models import Count
+from inventory.models import Location, ProductStock, ProductWithStock
+from django.db.models import Sum, Count
 from django.utils.translation import gettext_lazy as _
+
 
 class ProductStockInline(admin.TabularInline):
     model = ProductStock
@@ -15,6 +16,7 @@ class LocationAdmin(admin.ModelAdmin):
     pass
     inlines = [ProductStockInline]
     list_display = ('name', 'num_products')
+    search_fields = ['name']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -25,7 +27,21 @@ class LocationAdmin(admin.ModelAdmin):
     def num_products(self, obj):
         return obj.num_products
 
-@admin.register(ProductStock)
-class ProductStockAdmin(admin.ModelAdmin):
+
+@admin.register(ProductWithStock)
+class ProductWithStockAdmin(admin.ModelAdmin):
     pass
-    list_display = ('product', 'location', 'stock')
+    list_display = ('name', 'sum_stock')
+    inlines = [ProductStockInline]
+    search_fields = ['name']
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(
+            sum_stock=Sum('productstock__stock'),
+        )
+        return queryset
+
+    @admin.display(description=_('Sum of stock'))
+    def sum_stock(self, obj):
+        return obj.sum_stock
