@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-05 22:24+0200\n"
+"POT-Creation-Date: 2024-08-06 14:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,29 +22,66 @@ msgstr ""
 msgid "Home"
 msgstr "Start"
 
+#: inventory/admin.py:24
+msgid "Number of products"
+msgstr "Anzahl der Produkte"
+
+#: inventory/apps.py:8
+msgid "Inventory"
+msgstr "Inventar"
+
+#: inventory/models.py:10 master/models.py:8 shopping/models.py:9
+#: shopping/models.py:22
+msgid "Name"
+msgstr "Bezeichnung"
+
+#: inventory/models.py:13 inventory/models.py:23
+msgid "Location"
+msgstr "Ort"
+
+#: inventory/models.py:14
+msgid "Locations"
+msgstr "Orte"
+
+#: inventory/models.py:22 master/models.py:11 shopping/models.py:24
+msgid "Product"
+msgstr "Produkt"
+
+#: inventory/models.py:24
+msgid "Stock"
+msgstr "Bestand"
+
+#: inventory/models.py:30 inventory/models.py:31
+msgid "Product Stock"
+msgstr "Bestand"
+
 #: master/apps.py:8
 msgid "Master Data"
 msgstr "Stammdaten"
-
-#: master/models.py:11
-msgid "Product"
-msgstr "Produkt"
 
 #: master/models.py:12
 msgid "Products"
 msgstr "Produkte"
 
+#: shopping/admin.py:25
+msgid "Number of items"
+msgstr "Anzahl der Artikel"
+
 #: shopping/apps.py:8
 msgid "Shopping"
 msgstr "Einkaufen"
 
-#: shopping/models.py:12
+#: shopping/models.py:12 shopping/models.py:21
 msgid "Shopping List"
 msgstr "Einkaufsliste"
 
 #: shopping/models.py:13
 msgid "Shopping Lists"
 msgstr "Einkaufslisten"
+
+#: shopping/models.py:23
+msgid "Quantity"
+msgstr "Menge"
 
 #: shopping/models.py:27
 msgid "Item"
