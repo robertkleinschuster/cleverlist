@@ -13,3 +13,17 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Tag(models.Model):
+    pass
+    name = models.CharField(unique=True, max_length=100, verbose_name=_('Name'))
+    color = models.CharField(max_length=7, default='#ffffff', verbose_name=_('Color'))
+    description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
+
+    class Meta:
+        verbose_name = _('Tag')
+        verbose_name_plural = _('Tags')
+
+    def __str__(self):
+        return self.name
