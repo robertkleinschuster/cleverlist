@@ -15,12 +15,8 @@ class Tag(models.Model):
         verbose_name_plural = _('Tags')
 
     def __str__(self):
-        return format_html(
-            '<span title="{}" class="tag" style="background-color: {};">{}</span>',
-            self.description,
-            self.color,
-            self.name
-        )
+        html = f'<span title="{self.description}" class="tag" style="background-color: {self.color};">{self.name}</span>'
+        return format_html(html)
 
 
 class Product(models.Model):
