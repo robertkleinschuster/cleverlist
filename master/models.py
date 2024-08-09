@@ -16,9 +16,10 @@ class Tag(models.Model):
 
     def __str__(self):
         return format_html(
-            f'<span title="{self.description}" class="tag" style="background-color: {self.color};">'
-            f'{self.name}'
-            f'</span>'
+            '<span title="{}" class="tag" style="background-color: {};">{}</span>',
+            self.description,
+            self.color,
+            self.name
         )
 
 
