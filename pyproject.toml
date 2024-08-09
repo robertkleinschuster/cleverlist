@@ -10,7 +10,6 @@ package-mode = false
 python = "^3.11"
 django = "^5.0.7"
 python-dotenv = "^1.0.1"
-mysql-connector-python = "^9.0.0"
 
 
 [build-system]
