@@ -28,7 +28,7 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Install dependencies
-        run: python manage.py test
+        run: poetry run python manage.py test
 
   deployment:
     needs: test
