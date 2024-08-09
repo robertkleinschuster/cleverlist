@@ -57,6 +57,12 @@ jobs:
       - name: Export dependencies
         run: poetry export -f requirements.txt --output requirements.txt
 
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo DJANGO_ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo DJANGO_SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+
       - name: Upload
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -68,3 +74,17 @@ jobs:
           source: "*"
           target: "/home/robs/cleverlist"
           rm: true
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd cleverlist
+            pip3.11 install -r requirements.txt
+            python3.11 manage.py migrate
+            python3.11 manage.py collectstatic
+            supervisorctl restart cleverlist
