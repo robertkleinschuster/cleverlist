@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
                 ('deadline', models.DateTimeField(blank=True, null=True)),
-                ('shoppinglist', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, to='shopping.list', verbose_name='Shopping list')),
+                ('shoppinglist', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, to='shopping.list', verbose_name='Shopping List')),
                 ('tags', models.ManyToManyField(blank=True, to='master.tag', verbose_name='Tags')),
             ],
             options={

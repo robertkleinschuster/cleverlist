@@ -7,4 +7,4 @@ class AdminSite(admin.AdminSite):
     site_title = 'CleverList'
     index_title = _('Home')
     site_url = None
-
+    empty_value_display = _('None')

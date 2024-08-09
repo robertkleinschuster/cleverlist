@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-08 16:54+0200\n"
+"POT-Creation-Date: 2024-08-09 22:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,11 +22,15 @@ msgstr ""
 msgid "Home"
 msgstr "Start"
 
-#: inventory/admin.py:26
+#: cleverlist/admin.py:10
+msgid "None"
+msgstr "[Leer]"
+
+#: inventory/admin.py:54
 msgid "Number of products"
 msgstr "Anzahl der Produkte"
 
-#: inventory/admin.py:45
+#: inventory/admin.py:80
 msgid "Sum of stock"
 msgstr "Bestand"
 
@@ -34,36 +38,42 @@ msgstr "Bestand"
 msgid "Inventory"
 msgstr "Inventar"
 
-#: inventory/models.py:10 master/models.py:8 master/models.py:20
-#: shopping/models.py:9 shopping/models.py:22
+#: inventory/models.py:10 master/models.py:8 master/models.py:22
+#: shopping/models.py:9 shopping/models.py:23
 msgid "Name"
 msgstr "Bezeichnung"
 
-#: inventory/models.py:13 inventory/models.py:23
+#: inventory/models.py:11 inventory/models.py:26 master/models.py:14
+#: master/models.py:23 shopping/models.py:10 shopping/models.py:26
+#: todo/models.py:13
+msgid "Tags"
+msgstr "Tags"
+
+#: inventory/models.py:14 inventory/models.py:24
 msgid "Location"
 msgstr "Ort"
 
-#: inventory/models.py:14
+#: inventory/models.py:15
 msgid "Locations"
 msgstr "Orte"
 
-#: inventory/models.py:22 master/models.py:11 shopping/models.py:24
+#: inventory/models.py:23 master/models.py:26 shopping/models.py:25
 msgid "Product"
 msgstr "Produkt"
 
-#: inventory/models.py:24
+#: inventory/models.py:25
 msgid "Stock"
 msgstr "Bestand"
 
-#: inventory/models.py:30 inventory/models.py:31
+#: inventory/models.py:32 inventory/models.py:33
 msgid "Product Stock"
 msgstr "Bestand"
 
-#: inventory/models.py:38
+#: inventory/models.py:40
 msgid "Product with stock"
 msgstr "Produktbestand"
 
-#: inventory/models.py:39
+#: inventory/models.py:41
 msgid "Products with stock"
 msgstr "Produktbestand"
 
@@ -71,27 +81,23 @@ msgstr "Produktbestand"
 msgid "Master Data"
 msgstr "Stammdaten"
 
-#: master/models.py:12
-msgid "Products"
-msgstr "Produkte"
-
-#: master/models.py:21
+#: master/models.py:9
 msgid "Color"
 msgstr "Farbe"
 
-#: master/models.py:22
+#: master/models.py:10
 msgid "Description"
 msgstr "Beschreibung"
 
-#: master/models.py:25
+#: master/models.py:13
 msgid "Tag"
 msgstr "Tag"
 
-#: master/models.py:26
-msgid "Tags"
-msgstr "Tags"
+#: master/models.py:27
+msgid "Products"
+msgstr "Produkte"
 
-#: shopping/admin.py:25
+#: shopping/admin.py:54
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
 
@@ -99,27 +105,27 @@ msgstr "Anzahl der Artikel"
 msgid "Shopping"
 msgstr "Einkaufen"
 
-#: shopping/models.py:12 shopping/models.py:21
+#: shopping/models.py:13 shopping/models.py:22 todo/models.py:15
 msgid "Shopping List"
 msgstr "Einkaufsliste"
 
-#: shopping/models.py:13
+#: shopping/models.py:14
 msgid "Shopping Lists"
 msgstr "Einkaufslisten"
 
-#: shopping/models.py:23
+#: shopping/models.py:24
 msgid "Quantity"
 msgstr "Menge"
 
-#: shopping/models.py:27
+#: shopping/models.py:29
 msgid "Item"
 msgstr "Artikel"
 
-#: shopping/models.py:28
+#: shopping/models.py:30
 msgid "Items"
 msgstr "Artikel"
 
-#: shopping/models.py:31
+#: shopping/models.py:33
 msgid "without product"
 msgstr "ohne Produkt"
 
@@ -127,10 +133,10 @@ msgstr "ohne Produkt"
 msgid "To-Do"
 msgstr "To-Do"
 
-#: todo/models.py:18
+#: todo/models.py:21
 msgid "Task"
 msgstr "Aufgabe"
 
-#: todo/models.py:19
+#: todo/models.py:22
 msgid "Tasks"
 msgstr "Aufgaben"

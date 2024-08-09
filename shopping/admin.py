@@ -1,33 +1,15 @@
-from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
+from master.admin import FormWithTags, format_tag, TagFilter
 from shopping.models import List, Item
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 
-class ListForm(forms.ModelForm):
-    class Meta:
-        model = List
-        fields = '__all__'
-        widgets = {
-            'tags': forms.CheckboxSelectMultiple(),
-        }
-
-
-class ItemForm(forms.ModelForm):
-    class Meta:
-        model = Item
-        fields = '__all__'
-        widgets = {
-            'tags': forms.CheckboxSelectMultiple(),
-        }
-
-
 class ItemInline(admin.StackedInline):
     model = Item
-    form = ItemForm
+    form = FormWithTags
     extra = 0  # Number of empty inline forms to display
 
 
@@ -35,16 +17,16 @@ class ItemInline(admin.StackedInline):
 @admin.register(List)
 class ListAdmin(admin.ModelAdmin):
     pass
-    form = ListForm
+    form = FormWithTags
     search_fields = ['name']
     inlines = [ItemInline]
     list_display = ['name', 'num_items', 'display_tags']
-    list_filter = [('tags', admin.RelatedOnlyFieldListFilter)]
+    list_filter = [('tags', TagFilter)]
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = obj.tags.all()
-        return format_html(' '.join(f'<span title="{tag.description}" class="tag" style="background-color: {tag.color}">{tag.name}</span>' for tag in tags))
+        return format_html(' '.join(format_tag(tag) for tag in tags))
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

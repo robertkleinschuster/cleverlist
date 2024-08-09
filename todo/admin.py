@@ -1,28 +1,19 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from django import forms
 
+from master.admin import FormWithTags, format_tag, TagFilter
 from todo.models import Task
-
-
-class TaskForm(forms.ModelForm):
-    class Meta:
-        model = Task
-        fields = '__all__'
-        widgets = {
-            'tags': forms.CheckboxSelectMultiple(),
-        }
 
 
 # Register your models here.
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     pass
-    form = TaskForm
+    form = FormWithTags
     list_display = ['name', 'display_tags']
-    list_filter = [('tags', admin.RelatedOnlyFieldListFilter)]
+    list_filter = [('tags', TagFilter)]
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = obj.tags.all()
-        return format_html(' '.join(f'<span title="{tag.description}" class="tag" style="background-color: {tag.color}">{tag.name}</span>' for tag in tags))
+        return format_html(' '.join(format_tag(tag) for tag in tags))

@@ -1,13 +1,65 @@
 .tag {
+    box-sizing: border-box;
+    display: inline-flex;
+    gap: .25rem;
+    align-items: center;
     padding: 2px 6px;
-    border-radius: 10px;
+    border-radius: 16px;
     color: #000;
+    font-size: 12px;
+}
+
+#changelist-filter .tag:before,
+#id_tags .tag:before {
+    content: "\2713"; /* Unicode checkmark */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #333;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #fff;
+    box-sizing: border-box;
 }
 
 #changelist-filter .tag:before {
-    content: '  ';
+    content: "\23FA"; /* Unicode dot */
 }
 
+#changelist-filter .tag:before {
+    border-radius: 100%;
+}
+
+#changelist-filter .tag,
+#id_tags .tag {
+    opacity: .7;
+    filter: grayscale(10%);
+}
+
+#id_tags input:checked ~ .tag,
+#changelist-filter .selected .tag {
+    opacity: 1;
+    filter: none;
+}
+
+
 #changelist-filter .selected .tag:before {
-    content: '✓ ';
+    color: #333;
+}
+
+#id_tags input:checked ~ .tag:before {
+    background-color: #333;
+    color: #fff;
+}
+
+#id_tags {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+#id_tags input {
+    display: none;
 }

@@ -12,7 +12,7 @@ class Task(models.Model):
     deadline = models.DateTimeField(null=True, blank=True)
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
     shoppinglist = models.ForeignKey(List, on_delete=models.RESTRICT, null=True, blank=True,
-                                     verbose_name=_('Shopping list'))
+                                     verbose_name=_('Shopping List'))
 
     def __str__(self):
         return self.name

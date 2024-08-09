@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
@@ -6,28 +5,12 @@ from inventory.models import Location, ProductStock, ProductWithStock
 from django.db.models import Sum, Count
 from django.utils.translation import gettext_lazy as _
 
-
-class ProductStockForm(forms.ModelForm):
-    class Meta:
-        model = ProductStock
-        fields = '__all__'
-        widgets = {
-            'tags': forms.CheckboxSelectMultiple(),
-        }
-
-
-class LocationForm(forms.ModelForm):
-    class Meta:
-        model = Location
-        fields = '__all__'
-        widgets = {
-            'tags': forms.CheckboxSelectMultiple(),
-        }
+from master.admin import FormWithTags, format_tag, TagFilter
 
 
 class ProductStockInline(admin.StackedInline):
     model = ProductStock
-    form = ProductStockForm
+    form = FormWithTags
     extra = 0
 
 
@@ -35,16 +18,16 @@ class ProductStockInline(admin.StackedInline):
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     pass
-    form = LocationForm
+    form = FormWithTags
     inlines = [ProductStockInline]
     list_display = ('name', 'num_products', 'display_tags')
     search_fields = ['name']
-    list_filter = [('tags', admin.RelatedOnlyFieldListFilter)]
+    list_filter = [('tags', TagFilter)]
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = obj.tags.all()
-        return format_html(' '.join(f'<span title="{tag.description}" class="tag" style="background-color: {tag.color}">{tag.name}</span>' for tag in tags))
+        return format_html(' '.join(format_tag(tag) for tag in tags))
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -59,16 +42,16 @@ class LocationAdmin(admin.ModelAdmin):
 @admin.register(ProductWithStock)
 class ProductWithStockAdmin(admin.ModelAdmin):
     pass
-    form = ProductStockForm
+    form = FormWithTags
     list_display = ('name', 'sum_stock', 'display_tags')
     inlines = [ProductStockInline]
     search_fields = ['name']
-    list_filter = [('tags', admin.RelatedOnlyFieldListFilter)]
+    list_filter = [('tags', TagFilter)]
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = obj.tags.all()
-        return format_html(' '.join(f'<span title="{tag.description}" class="tag" style="background-color: {tag.color}">{tag.name}</span>' for tag in tags))
+        return format_html(' '.join(format_tag(tag) for tag in tags))
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
