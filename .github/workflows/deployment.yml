@@ -62,6 +62,7 @@ jobs:
           touch .env
           echo DJANGO_ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}" >> .env
           echo DJANGO_SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+          echo DJANGO_STATIC_ROOT="${{ secrets.STATIC_ROOT }}" >> .env
 
       - name: Upload
         uses: appleboy/scp-action@v0.1.7
