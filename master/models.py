@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 
@@ -15,8 +14,7 @@ class Tag(models.Model):
         verbose_name_plural = _('Tags')
 
     def __str__(self):
-        html = f'<span title="{self.description}" class="tag" style="background-color: {self.color};">{self.name}</span>'
-        return format_html(html)
+        return self.name
 
 
 class Product(models.Model):

@@ -44,7 +44,7 @@ class ListAdmin(admin.ModelAdmin):
     @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = obj.tags.all()
-        return format_html(' '.join(str(tag) for tag in tags))
+        return format_html(' '.join(f'<span title="{tag.description}" class="tag" style="background-color: {tag.color}">{tag.name}</span>' for tag in tags))
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
