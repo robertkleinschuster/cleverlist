@@ -1,12 +1,13 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from master.models import Product
+from master.models import Product, Tag
 
 
 # Create your models here.
 class List(models.Model):
     pass
     name = models.CharField(max_length=100, verbose_name=_('Name'))
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
 
     class Meta:
         verbose_name = _('Shopping List')
@@ -22,6 +23,7 @@ class Item(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('Name'))
     quantity = models.IntegerField(default=1, verbose_name=_('Quantity'))
     product = models.ForeignKey(Product, on_delete=models.RESTRICT, null=True, blank=True, verbose_name=_('Product'))
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
 
     class Meta:
         verbose_name = _('Item')

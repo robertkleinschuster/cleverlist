@@ -5,11 +5,28 @@ from django.utils.html import format_html
 from master.models import Product, Tag
 
 
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        widgets = {
+            'tags': forms.CheckboxSelectMultiple(),
+        }
+
+
 # Register your models here.
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     pass
+    form = ProductForm
+    list_display = ['name', 'display_tags']
     search_fields = ['name']
+    list_filter = [('tags', admin.RelatedOnlyFieldListFilter)]
+
+    @admin.display(description='Tags')
+    def display_tags(self, obj):
+        tags = obj.tags.all()
+        return format_html(' '.join(str(tag) for tag in tags))
 
 
 class TagForm(forms.ModelForm):
@@ -30,8 +47,4 @@ class TagAdmin(admin.ModelAdmin):
 
     @admin.display(description='Tags')
     def display_name(self, obj):
-        return format_html(
-            f'<span style="background-color: {obj.color}; color: #000; padding: 2px 5px; border-radius: 5px;">'
-            f'{obj.name}'
-            f'</span>'
-        )
+        return str(obj)

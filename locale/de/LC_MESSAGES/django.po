@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-07 15:56+0200\n"
+"POT-Creation-Date: 2024-08-08 16:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,8 @@ msgstr "Bestand"
 msgid "Inventory"
 msgstr "Inventar"
 
-#: inventory/models.py:10 master/models.py:8 shopping/models.py:9
-#: shopping/models.py:22
+#: inventory/models.py:10 master/models.py:8 master/models.py:20
+#: shopping/models.py:9 shopping/models.py:22
 msgid "Name"
 msgstr "Bezeichnung"
 
@@ -75,6 +75,22 @@ msgstr "Stammdaten"
 msgid "Products"
 msgstr "Produkte"
 
+#: master/models.py:21
+msgid "Color"
+msgstr "Farbe"
+
+#: master/models.py:22
+msgid "Description"
+msgstr "Beschreibung"
+
+#: master/models.py:25
+msgid "Tag"
+msgstr "Tag"
+
+#: master/models.py:26
+msgid "Tags"
+msgstr "Tags"
+
 #: shopping/admin.py:25
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
@@ -111,18 +127,10 @@ msgstr "ohne Produkt"
 msgid "To-Do"
 msgstr "To-Do"
 
-#: todo/models.py:14
-msgid "Category"
-msgstr "Kategorie"
-
-#: todo/models.py:15
-msgid "Categories"
-msgstr "Kategorien"
-
-#: todo/models.py:28
+#: todo/models.py:18
 msgid "Task"
 msgstr "Aufgabe"
 
-#: todo/models.py:29
+#: todo/models.py:19
 msgid "Tasks"
 msgstr "Aufgaben"

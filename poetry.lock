@@ -35,6 +35,20 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-more-admin-filters"
+version = "1.8"
+description = "Additional filters for django-admin."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django_more_admin_filters-1.8-py3-none-any.whl", hash = "sha256:2d5dd9e8b55d85638d5e260dfb694b1903288b61c37e655b9443b70a5f36833f"},
+    {file = "django_more_admin_filters-1.8.tar.gz", hash = "sha256:fc4d3a3bf0367763a887dceca4b469e467ad062a9e8da1c29b6d6137c5b0e3cd"},
+]
+
+[package.dependencies]
+Django = ">=2.2,<6.0"
+
+[[package]]
 name = "sqlparse"
 version = "0.5.1"
 description = "A non-validating SQL parser."
@@ -63,4 +77,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "13f0c284090b25df07b5552c0edb2f7921636f5f9838f35c0340aa24d91b87dc"
+content-hash = "080d92f11d9713e8ab90e16cca3ebd92dff008985ceea7615404d0c23d5054af"

@@ -20,13 +20,9 @@ class TaskAdmin(admin.ModelAdmin):
     pass
     form = TaskForm
     list_display = ['name', 'display_tags']
-    list_filter = ['tags']
-    filter_horizontal = ['tags']
+    list_filter = [('tags', admin.RelatedOnlyFieldListFilter)]
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = obj.tags.all()
-        return format_html(' '.join(
-            f'<span style="background-color: {tag.color}; color: #000; padding: 2px 5px; border-radius: 5px;">{tag.name}</span>'
-            for tag in tags
-        ))
+        return format_html(' '.join(str(tag) for tag in tags))
