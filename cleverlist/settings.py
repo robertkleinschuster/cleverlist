@@ -91,6 +91,7 @@ if MY_CNF and DB_NAME:
             'NAME': DB_NAME,
             'OPTIONS': {
                 'read_default_file': MY_CNF,
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
             },
         }
     }
