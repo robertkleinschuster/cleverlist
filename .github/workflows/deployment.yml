@@ -1,5 +1,8 @@
 name: Deployment pipeline
 
+env:
+  VIRTUALENV_ALWAYS_COPY: 1
+
 on:
   push:
     branches:
