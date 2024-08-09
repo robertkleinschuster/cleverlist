@@ -81,12 +81,26 @@ WSGI_APPLICATION = 'cleverlist.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+MY_CNF = os.environ.get('DJANGO_DB_MY_CNF', None)
+DB_NAME = os.environ.get('DJANGO_DB_NAME', None)
+
+if MY_CNF and DB_NAME:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': DB_NAME,
+            'OPTIONS': {
+                'read_default_file': MY_CNF,
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
