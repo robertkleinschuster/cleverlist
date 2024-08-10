@@ -9,7 +9,7 @@ from shopping.models import List
 class Task(models.Model):
     pass
     name = models.CharField(max_length=100)
-    deadline = models.DateTimeField(null=True, blank=True)
+    deadline = models.DateTimeField(null=True, blank=True, verbose_name=_('Deadline'))
     done = models.DateTimeField(null=True, blank=True, editable=False, verbose_name=_('Done'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
     shoppinglist = models.ForeignKey(List, on_delete=models.RESTRICT, null=True, blank=True,

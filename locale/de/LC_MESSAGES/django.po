@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-09 22:33+0000\n"
+"POT-Creation-Date: 2024-08-10 20:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: cleverlist/admin.py:8
+#: cleverlist/admin.py:12
 msgid "Home"
 msgstr "Start"
 
-#: cleverlist/admin.py:10
+#: cleverlist/admin.py:14
 msgid "None"
 msgstr "[Leer]"
 
-#: inventory/admin.py:54
+#: inventory/admin.py:38
 msgid "Number of products"
 msgstr "Anzahl der Produkte"
 
-#: inventory/admin.py:80
+#: inventory/admin.py:64
 msgid "Sum of stock"
 msgstr "Bestand"
 
@@ -45,7 +45,7 @@ msgstr "Bezeichnung"
 
 #: inventory/models.py:11 inventory/models.py:26 master/models.py:14
 #: master/models.py:23 shopping/models.py:10 shopping/models.py:26
-#: todo/models.py:13
+#: todo/admin.py:31 todo/models.py:14
 msgid "Tags"
 msgstr "Tags"
 
@@ -77,6 +77,10 @@ msgstr "Produktbestand"
 msgid "Products with stock"
 msgstr "Produktbestand"
 
+#: master/admin.py:45
+msgid "All"
+msgstr "Alle"
+
 #: master/apps.py:8
 msgid "Master Data"
 msgstr "Stammdaten"
@@ -97,7 +101,7 @@ msgstr "Tag"
 msgid "Products"
 msgstr "Produkte"
 
-#: shopping/admin.py:54
+#: shopping/admin.py:37
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
 
@@ -105,7 +109,7 @@ msgstr "Anzahl der Artikel"
 msgid "Shopping"
 msgstr "Einkaufen"
 
-#: shopping/models.py:13 shopping/models.py:22 todo/models.py:15
+#: shopping/models.py:13 shopping/models.py:22 todo/models.py:16
 msgid "Shopping List"
 msgstr "Einkaufsliste"
 
@@ -129,14 +133,42 @@ msgstr "Artikel"
 msgid "without product"
 msgstr "ohne Produkt"
 
+#: templates/list_actions.html:8
+msgid "Actions"
+msgstr "Aktionen"
+
+#: todo/admin.py:11
+msgid "Mark task as done"
+msgstr "Als erledigt markieren"
+
+#: todo/admin.py:16
+msgid "Mark task as pending"
+msgstr "Als offen markieren"
+
 #: todo/apps.py:8
 msgid "To-Do"
 msgstr "To-Do"
 
-#: todo/models.py:21
+#: todo/models.py:12
+msgid "Deadline"
+msgstr "Frist"
+
+#: todo/models.py:13
+msgid "Done"
+msgstr "Erledigt"
+
+#: todo/models.py:22
 msgid "Task"
 msgstr "Aufgabe"
 
-#: todo/models.py:22
+#: todo/models.py:23
 msgid "Tasks"
 msgstr "Aufgaben"
+
+#: todo/models.py:38
+msgid "Pending Task"
+msgstr "Offene Aufgabe"
+
+#: todo/models.py:39
+msgid "Pending Tasks"
+msgstr "Offene Aufgaben"

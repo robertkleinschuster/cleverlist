@@ -20,12 +20,11 @@ def mark_pending(modeladmin, request, queryset):
 
 # Register your models here.
 @admin.register(Task)
-@admin.register(PendingTask)
 class TaskAdmin(ListActionModelAdmin):
     pass
     form = FormWithTags
-    list_display = ['name', 'display_tags', 'done']
-    list_filter = [('tags', TagFilter)]
+    list_display = ['name', 'display_tags', 'deadline', 'done']
+    list_filter = [('tags', TagFilter), 'done']
     actions = [mark_done, mark_pending]
     list_actions = ['mark_done', 'mark_pending']
 
@@ -33,3 +32,9 @@ class TaskAdmin(ListActionModelAdmin):
     def display_tags(self, obj):
         tags = obj.tags.all()
         return format_html(' '.join(format_tag(tag) for tag in tags))
+
+
+@admin.register(PendingTask)
+class PendingTaskAdmin(TaskAdmin):
+    pass
+    list_filter = [('tags', TagFilter), 'deadline']
