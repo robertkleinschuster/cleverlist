@@ -3,10 +3,11 @@
     display: inline-flex;
     gap: .25rem;
     align-items: center;
-    padding: 2px 6px;
+    padding: 0 6px;
     border-radius: 16px;
     color: #000;
     font-size: 12px;
+    border: 1px solid #00000055;
 }
 
 #changelist-filter .tag:before,
@@ -34,8 +35,7 @@
 
 #changelist-filter .tag,
 #id_tags .tag {
-    opacity: .7;
-    filter: grayscale(10%);
+    padding: 4px 8px;
 }
 
 #id_tags input:checked ~ .tag,
@@ -57,7 +57,6 @@
 #id_tags {
     display: flex;
     flex-direction: column;
-    gap: .25rem;
 }
 
 #id_tags input {
