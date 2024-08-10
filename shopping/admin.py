@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from cleverlist.admin import ListActionModelAdmin
 from master.admin import FormWithTags, format_tag, TagFilter
 from shopping.models import List, Item
 from django.db.models import Count
@@ -15,7 +16,7 @@ class ItemInline(admin.StackedInline):
 
 # Register your models here.
 @admin.register(List)
-class ListAdmin(admin.ModelAdmin):
+class ListAdmin(ListActionModelAdmin):
     pass
     form = FormWithTags
     search_fields = ['name']

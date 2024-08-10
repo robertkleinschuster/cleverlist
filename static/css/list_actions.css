@@ -1,0 +1,28 @@
+.field-list_actions div {
+    display: none;
+    position: absolute;
+    background: #000;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.field-list_actions input {
+    display: none;
+}
+
+.field-list_actions label {
+    text-decoration: underline;
+}
+
+.field-list_actions button {
+    border-radius: 0;
+    margin: 0;
+}
+
+.field-list_actions label:hover {
+    text-decoration: none;
+}
+
+.field-list_actions input:checked ~ div {
+    display: flex;
+}

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from cleverlist.admin import ListActionModelAdmin
 from inventory.models import Location, ProductStock, ProductWithStock
 from django.db.models import Sum, Count
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +17,7 @@ class ProductStockInline(admin.StackedInline):
 
 # Register your models here.
 @admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
+class LocationAdmin(ListActionModelAdmin):
     pass
     form = FormWithTags
     inlines = [ProductStockInline]
@@ -40,7 +41,7 @@ class LocationAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductWithStock)
-class ProductWithStockAdmin(admin.ModelAdmin):
+class ProductWithStockAdmin(ListActionModelAdmin):
     pass
     form = FormWithTags
     list_display = ('name', 'sum_stock', 'display_tags')

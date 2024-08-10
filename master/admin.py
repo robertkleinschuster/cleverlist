@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from cleverlist.admin import ListActionModelAdmin
 from master.models import Product, Tag
 
 
@@ -94,7 +95,7 @@ class TagFilter(admin.RelatedFieldListFilter):
 
 # Register your models here.
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ListActionModelAdmin):
     pass
     form = FormWithTags
     list_display = ['name', 'display_tags']

@@ -10,6 +10,7 @@ class Task(models.Model):
     pass
     name = models.CharField(max_length=100)
     deadline = models.DateTimeField(null=True, blank=True)
+    done = models.DateTimeField(null=True, blank=True, editable=False, verbose_name=_('Done'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
     shoppinglist = models.ForeignKey(List, on_delete=models.RESTRICT, null=True, blank=True,
                                      verbose_name=_('Shopping List'))
@@ -20,3 +21,19 @@ class Task(models.Model):
     class Meta:
         verbose_name = _('Task')
         verbose_name_plural = _('Tasks')
+
+
+class PendingTaskManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(done=None)
+
+
+class PendingTask(Task):
+    pass
+
+    default_manager = PendingTaskManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = _('Pending Task')
+        verbose_name_plural = _('Pending Tasks')
