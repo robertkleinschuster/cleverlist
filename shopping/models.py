@@ -19,10 +19,10 @@ class List(models.Model):
 
 class Item(models.Model):
     pass
-    list = models.ForeignKey(List, on_delete=models.CASCADE, verbose_name=_('Shopping List'))
+    product = models.ForeignKey(Product, on_delete=models.RESTRICT, null=True, blank=True, verbose_name=_('Product'))
     name = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('Name'))
     quantity = models.IntegerField(default=1, verbose_name=_('Quantity'))
-    product = models.ForeignKey(Product, on_delete=models.RESTRICT, null=True, blank=True, verbose_name=_('Product'))
+    list = models.ForeignKey(List, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Shopping List'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
 
     class Meta:
@@ -31,7 +31,9 @@ class Item(models.Model):
 
     def __str__(self):
         product_name = self.product.name if self.product else _('without product')
-        return f"{self.quantity} {self.name} in {self.list.name} ({product_name})"
+        if self.name:
+            product_name = self.name
+        return f"{self.quantity} x {product_name}"
 
     def save(self, *args, **kwargs):
         if not self.name and self.product:

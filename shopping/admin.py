@@ -37,3 +37,16 @@ class ListAdmin(ListActionModelAdmin):
     @admin.display(description=_('Number of items'))
     def num_items(self, obj):
         return obj.num_items
+
+
+@admin.register(Item)
+class ItemAdmin(ListActionModelAdmin):
+    form = FormWithTags
+    search_fields = ['name']
+    list_display = ['__str__', 'display_tags', 'list']
+    list_filter = [('tags', TagFilter), ('list', admin.RelatedOnlyFieldListFilter)]
+
+    @admin.display(description='Tags')
+    def display_tags(self, obj):
+        tags = obj.tags.all()
+        return format_html(' '.join(format_tag(tag) for tag in tags))
