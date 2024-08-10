@@ -1,10 +1,9 @@
 from django.contrib import admin
+from django.forms.renderers import get_default_renderer
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import format_html
 from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ChangeList
 from django.utils.safestring import mark_safe
-from widgets import ListActionButton
 
 
 class AdminSite(admin.AdminSite):
@@ -33,37 +32,20 @@ class ActionsChangeList(ChangeList):
 
     def add_actions(self, list_display: list, request, model_admin):
         if isinstance(model_admin.list_actions, list):
-            buttons = []
+            actions = []
             action_choices = model_admin.get_action_choices(request, [])
             for action, description in action_choices:
-                for list_action in model_admin.list_actions:
-                    if isinstance(list_action, tuple):
-                        list_action, action_button_class = list_action
-                    else:
-                        list_action = list_action
-                        action_button_class = ListActionButton
-                    if list_action == action:
-                        button = action_button_class(attrs={
-                            'label': description,
-                            'data-checkbox-name': helpers.ACTION_CHECKBOX_NAME
-                        })
-                        buttons.append((action, button))
+                if action in model_admin.list_actions:
+                    actions.append((action, description))
 
-            if len(buttons) > 0:
+            if len(actions) > 0:
                 @admin.display(description='')
                 def list_actions(obj):
-                    content = mark_safe(' '.join([
-                        btn.render('action', act, {
-                            'data-checkbox-value': obj.pk,
-                        }) for act, btn in buttons
-                    ]))
-
-                    return format_html(
-                        '<input type="checkbox" name="list-actions" id="list-actions-{}"/> <label for="list-actions-{}">{}</label><div>{}</div>',
-                        obj.pk,
-                        obj.pk,
-                        _("Actions"),
-                        content
-                    )
+                    renderer = get_default_renderer()
+                    return mark_safe(renderer.render('list_actions.html', {
+                        'actions': actions,
+                        'checkbox_value': obj.pk,
+                        'checkbox_name': helpers.ACTION_CHECKBOX_NAME
+                    }))
 
                 list_display.append(list_actions)

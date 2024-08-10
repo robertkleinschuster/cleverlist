@@ -1,9 +1,0 @@
-<button class="button"
-        type="{{ widget.type }}"
-        name="{{ widget.name }}"
-        {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}
-        {% if widget.is_list_action %} is="list-action-button"{% endif %}
-        {% include "django/forms/widgets/attrs.html" %}
->
-    {{ widget.label }}
-</button>

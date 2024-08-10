@@ -1,0 +1,17 @@
+{% load i18n %}
+<list-actions-dropdown
+        data-checkbox-value="{{ checkbox_value }}"
+        data-checkbox-name="{{ checkbox_name }}"
+        data-dropdown-name="action"
+>
+    <sl-dropdown size="small">
+        <sl-icon-button slot="trigger" name="three-dots-vertical" label="{% trans 'Actions' %}"></sl-icon-button>
+        <sl-menu>
+            {% for action, description in actions %}
+                <sl-menu-item class="list-action-item" data-action="{{ action }}">
+                    {{ description }}
+                </sl-menu-item>
+            {% endfor %}
+        </sl-menu>
+    </sl-dropdown>
+</list-actions-dropdown>

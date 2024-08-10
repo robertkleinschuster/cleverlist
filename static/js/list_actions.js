@@ -1,4 +1,4 @@
-class ListActionButton extends HTMLButtonElement {
+class ListActionsDropdown extends HTMLElement {
     connectedCallback() {
         this.addEventListener('click', this.handleClick)
     }
@@ -7,17 +7,19 @@ class ListActionButton extends HTMLButtonElement {
         this.removeEventListener('click', this.handleClick)
     }
 
-    handleClick = e => {
-        if (this.form) {
-            this.form[this.name][0].value = this.value;
-            for (const action of this.form[this.dataset.checkboxName]) {
+    handleClick = (e) => {
+        const form = this.closest('form')
+        const item = e.target.closest('.list-action-item')
+        if (form && item) {
+            form[this.dataset.dropdownName][0].value = item.dataset.action;
+            for (const action of form[this.dataset.checkboxName]) {
                 if (action.value === this.dataset.checkboxValue) {
                     action.checked = true;
                 }
             }
-            this.form.submit()
+            form.submit()
         }
     }
 }
 
-customElements.define('list-action-button', ListActionButton, {extends: 'button'});
+customElements.define('list-actions-dropdown', ListActionsDropdown);
