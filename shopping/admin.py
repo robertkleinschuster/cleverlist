@@ -66,6 +66,7 @@ class ListAdmin(ListActionModelAdmin):
 
             minimum_product_stocks = (MinimumProductStock.objects
                                       .select_related('product')
+                                      .prefetch_related('tags')
                                       .annotate(total_minimum_stock=Sum('minimum_stock'))
                                       .all())
 
@@ -83,19 +84,23 @@ class ListAdmin(ListActionModelAdmin):
                                 existing_item.quantity = stock_needed
                                 existing_item.save()
                             else:
-                                Item.objects.create(
+                                item = Item(
                                     product=mps.product,
                                     name=mps.product.name,
                                     quantity=stock_needed - existing_item.quantity,
                                     list=obj,
                                 )
-                    else:
-                        Item.objects.create(
+                                item.save()
+                                item.tags.set(mps.tags.all())
+                else:
+                        item = Item(
                             product=mps.product,
                             name=mps.product.name,
                             quantity=stock_needed,
                             list=obj,
                         )
+                        item.save()
+                        item.tags.set(mps.tags.all())
 
 
 @admin.register(Item)
