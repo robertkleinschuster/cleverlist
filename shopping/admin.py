@@ -62,10 +62,10 @@ class ListAdmin(ListActionModelAdmin):
                                       .all())
 
             product_stock_dict = {ps['product']: ps['total_stock'] for ps in product_stocks}
-            existing_item_dict = {item.product.pk: item for item in obj.item_set.all()}
+            existing_item_dict = {item.product.pk: item for item in Item.objects.all()}
 
             for mps in minimum_product_stocks:
-                current_stock = product_stock_dict.get(mps.product.pk, 0)  # Get the total stock or default to 0
+                current_stock = product_stock_dict.get(mps.product.pk, 0)
                 stock_needed = mps.minimum_stock - current_stock
                 if stock_needed > 0:
                     existing_item = existing_item_dict.get(mps.product.pk)
