@@ -40,3 +40,19 @@ class ProductWithStock(Product):
         verbose_name = _("Product with stock")
         verbose_name_plural = _("Products with stock")
         proxy = True
+
+
+class MinimumProductStock(models.Model):
+    pass
+    product = models.ForeignKey(Product, on_delete=models.RESTRICT, verbose_name=_('Product'))
+    location = models.ForeignKey(Location, on_delete=models.RESTRICT, verbose_name=_('Location'))
+    minimum_stock = models.IntegerField(default=0, verbose_name=_('Minimum Stock'))
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
+
+    def __str__(self):
+        return f"{self.minimum_stock} x {self.product.name} ({self.location.name})"
+
+    class Meta:
+        unique_together = ('product', 'location')
+        verbose_name = _("Minimum Product Stock")
+        verbose_name_plural = _("Minimum Product Stocks")

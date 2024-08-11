@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-10 20:06+0000\n"
+"POT-Creation-Date: 2024-08-11 08:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,13 +43,13 @@ msgstr "Inventar"
 msgid "Name"
 msgstr "Bezeichnung"
 
-#: inventory/models.py:11 inventory/models.py:26 master/models.py:14
-#: master/models.py:23 shopping/models.py:10 shopping/models.py:26
-#: todo/admin.py:31 todo/models.py:14
+#: inventory/models.py:11 inventory/models.py:26 inventory/models.py:50
+#: master/models.py:14 master/models.py:23 shopping/models.py:10
+#: shopping/models.py:26 todo/admin.py:31 todo/models.py:14
 msgid "Tags"
 msgstr "Tags"
 
-#: inventory/models.py:14 inventory/models.py:24
+#: inventory/models.py:14 inventory/models.py:24 inventory/models.py:48
 msgid "Location"
 msgstr "Ort"
 
@@ -57,7 +57,8 @@ msgstr "Ort"
 msgid "Locations"
 msgstr "Orte"
 
-#: inventory/models.py:23 master/models.py:26 shopping/models.py:25
+#: inventory/models.py:23 inventory/models.py:47 master/models.py:26
+#: shopping/models.py:22
 msgid "Product"
 msgstr "Produkt"
 
@@ -76,6 +77,18 @@ msgstr "Produktbestand"
 #: inventory/models.py:41
 msgid "Products with stock"
 msgstr "Produktbestand"
+
+#: inventory/models.py:49
+msgid "Minimum Stock"
+msgstr "Mindestbestand"
+
+#: inventory/models.py:57
+msgid "Minimum Product Stock"
+msgstr "Mindestbestand"
+
+#: inventory/models.py:58
+msgid "Minimum Product Stocks"
+msgstr "Mindestbestände"
 
 #: master/admin.py:45
 msgid "All"
@@ -109,7 +122,7 @@ msgstr "Anzahl der Artikel"
 msgid "Shopping"
 msgstr "Einkaufen"
 
-#: shopping/models.py:13 shopping/models.py:22 todo/models.py:16
+#: shopping/models.py:13 shopping/models.py:25 todo/models.py:16
 msgid "Shopping List"
 msgstr "Einkaufsliste"
 

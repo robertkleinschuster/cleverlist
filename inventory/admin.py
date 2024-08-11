@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
-from inventory.models import Location, ProductStock, ProductWithStock
+from inventory.models import Location, ProductStock, ProductWithStock, MinimumProductStock
 from django.db.models import Sum, Count
 from django.utils.translation import gettext_lazy as _
 
@@ -64,3 +64,16 @@ class ProductWithStockAdmin(ListActionModelAdmin):
     @admin.display(description=_('Sum of stock'))
     def sum_stock(self, obj):
         return obj.sum_stock
+
+
+@admin.register(MinimumProductStock)
+class MinimumProductStockAdmin(ListActionModelAdmin):
+    pass
+    form = FormWithTags
+    list_display = ('__str__', 'display_tags')
+    list_filter = [('tags', TagFilter), 'location']
+
+    @admin.display(description='Tags')
+    def display_tags(self, obj):
+        tags = obj.tags.all()
+        return format_html(' '.join(format_tag(tag) for tag in tags))
