@@ -103,12 +103,24 @@ class ListAdmin(ListActionModelAdmin):
                         item.tags.set(mps.tags.all())
 
 
+@admin.action(description=_("Add to cart"))
+def add_to_cart(modeladmin, request, queryset):
+    queryset.update(in_cart=True)
+
+
+@admin.action(description=_("Remove from cart"))
+def remove_from_cart(modeladmin, request, queryset):
+    queryset.update(in_cart=False)
+
+
 @admin.register(Item)
 class ItemAdmin(ListActionModelAdmin):
     form = FormWithTags
     search_fields = ['name']
-    list_display = ['__str__', 'display_tags', 'list']
+    list_display = ['__str__', 'in_cart', 'display_tags', 'list']
     list_filter = [('tags', TagFilter), ('list', admin.RelatedOnlyFieldListFilter)]
+    actions = [add_to_cart, remove_from_cart]
+    list_actions = ['add_to_cart', 'remove_from_cart']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

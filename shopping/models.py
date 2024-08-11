@@ -24,6 +24,7 @@ class Item(models.Model):
     quantity = models.IntegerField(default=1, verbose_name=_('Quantity'))
     list = models.ForeignKey(List, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Shopping List'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
+    in_cart = models.BooleanField(default=False, verbose_name=_('In-Cart'))
 
     class Meta:
         verbose_name = _('Item')

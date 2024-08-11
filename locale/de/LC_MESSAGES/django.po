@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-11 16:19+0000\n"
+"POT-Creation-Date: 2024-08-11 18:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,17 @@ msgstr "[Leer]"
 msgid "Number of products"
 msgstr "Anzahl der Produkte"
 
+#: inventory/admin.py:63 inventory/models.py:15
+msgid "Locations"
+msgstr "Orte"
+
+#: inventory/admin.py:69 inventory/models.py:11 inventory/models.py:26
+#: inventory/models.py:50 master/models.py:14 master/models.py:23
+#: shopping/models.py:10 shopping/models.py:26 todo/admin.py:36
+#: todo/models.py:14
+msgid "Tags"
+msgstr "Tags"
+
 #: inventory/admin.py:87
 msgid "Sum of stock"
 msgstr "Gesamtbestand"
@@ -47,19 +58,9 @@ msgstr "Inventar"
 msgid "Name"
 msgstr "Bezeichnung"
 
-#: inventory/models.py:11 inventory/models.py:26 inventory/models.py:50
-#: master/models.py:14 master/models.py:23 shopping/models.py:10
-#: shopping/models.py:26 todo/admin.py:36 todo/models.py:14
-msgid "Tags"
-msgstr "Tags"
-
 #: inventory/models.py:14 inventory/models.py:24 inventory/models.py:48
 msgid "Location"
 msgstr "Ort"
-
-#: inventory/models.py:15
-msgid "Locations"
-msgstr "Orte"
 
 #: inventory/models.py:23 inventory/models.py:47 master/models.py:26
 #: shopping/models.py:22
@@ -118,13 +119,21 @@ msgstr "Tag"
 msgid "Products"
 msgstr "Produkte"
 
-#: shopping/admin.py:21
+#: shopping/admin.py:22
 msgid "Add products under minimum stock"
 msgstr "Produkte unter Mindestbestand hinzufügen"
 
-#: shopping/admin.py:49
+#: shopping/admin.py:57
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
+
+#: shopping/admin.py:106
+msgid "Add to cart"
+msgstr "Im Einkaufswagen"
+
+#: shopping/admin.py:111
+msgid "Remove from cart"
+msgstr "Nicht im Einkaufswagen"
 
 #: shopping/apps.py:8
 msgid "Shopping"
@@ -142,15 +151,19 @@ msgstr "Einkaufslisten"
 msgid "Quantity"
 msgstr "Menge"
 
-#: shopping/models.py:29
+#: shopping/models.py:27
+msgid "In-Cart"
+msgstr "Im Einkaufswagen"
+
+#: shopping/models.py:30
 msgid "Item"
 msgstr "Artikel"
 
-#: shopping/models.py:30
+#: shopping/models.py:31
 msgid "Items"
 msgstr "Artikel"
 
-#: shopping/models.py:33
+#: shopping/models.py:34
 msgid "without product"
 msgstr "ohne Produkt"
 

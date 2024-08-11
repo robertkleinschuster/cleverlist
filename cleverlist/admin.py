@@ -48,4 +48,4 @@ class ActionsChangeList(ChangeList):
                         'checkbox_name': helpers.ACTION_CHECKBOX_NAME
                     }))
 
-                list_display.append(list_actions)
+                list_display.insert(1, list_actions)
