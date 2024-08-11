@@ -117,7 +117,7 @@ def remove_from_cart(modeladmin, request, queryset):
 class ItemAdmin(ListActionModelAdmin):
     form = FormWithTags
     search_fields = ['name']
-    list_display = ['__str__', 'in_cart', 'display_tags', 'list']
+    list_display = ['__str__', 'in_cart', 'list', 'display_tags']
     list_filter = [('tags', TagFilter), ('list', admin.RelatedOnlyFieldListFilter)]
     actions = [add_to_cart, remove_from_cart]
     list_actions = ['add_to_cart', 'remove_from_cart']
