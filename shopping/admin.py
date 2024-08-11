@@ -18,7 +18,8 @@ class ItemInline(admin.StackedInline):
 
 class ListAdminForm(FormWithTags):
     pass
-    add_products_under_minimum_stock = forms.BooleanField(required=False, label=_('Add products under minimum stock'), initial=True)
+    add_products_under_minimum_stock = forms.BooleanField(required=False, label=_('Add products under minimum stock'),
+                                                          initial=True)
 
     class Meta:
         model = List
@@ -71,8 +72,16 @@ class ListAdmin(ListActionModelAdmin):
                     existing_item = existing_item_dict.get(mps.product.pk)
                     if existing_item:
                         if existing_item.quantity < stock_needed:
-                            existing_item.quantity = stock_needed
-                            existing_item.save()
+                            if existing_item.list_id == obj.id:
+                                existing_item.quantity = stock_needed
+                                existing_item.save()
+                            else:
+                                Item.objects.create(
+                                    product=mps.product,
+                                    name=mps.product.name,
+                                    quantity=stock_needed - existing_item.quantity,
+                                    list=obj,
+                                )
                     else:
                         Item.objects.create(
                             product=mps.product,
