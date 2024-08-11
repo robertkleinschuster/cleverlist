@@ -43,15 +43,26 @@ class LocationAdmin(ListActionModelAdmin):
 @admin.register(ProductWithStock)
 class ProductWithStockAdmin(ListActionModelAdmin):
     pass
-    form = FormWithTags
     list_display = ('name', 'sum_stock', 'display_tags')
     inlines = [ProductStockInline]
     search_fields = ['name']
-    list_filter = [('tags', TagFilter)]
+    exclude = ['name', 'tags']
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
-        tags = obj.tags.all()
+        tags = []
+        for stock in obj.productstock_set.all():
+            for tag in stock.tags.all():
+                tags.append(tag)
         return format_html(' '.join(format_tag(tag) for tag in tags))
 
     def get_queryset(self, request):
