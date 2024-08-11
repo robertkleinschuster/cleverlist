@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-11 12:28+0000\n"
+"POT-Creation-Date: 2024-08-11 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,7 +118,11 @@ msgstr "Tag"
 msgid "Products"
 msgstr "Produkte"
 
-#: shopping/admin.py:38
+#: shopping/admin.py:21
+msgid "Add products under minimum stock"
+msgstr "Produkte unter Mindestbestand hinzufügen"
+
+#: shopping/admin.py:49
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
 

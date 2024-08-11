@@ -1,10 +1,12 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
+from inventory.models import MinimumProductStock, ProductStock
 from master.admin import FormWithTags, format_tag, TagFilter
 from shopping.models import List, Item
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils.translation import gettext_lazy as _
 
 
@@ -14,11 +16,20 @@ class ItemInline(admin.StackedInline):
     extra = 0  # Number of empty inline forms to display
 
 
+class ListAdminForm(FormWithTags):
+    pass
+    add_products_under_minimum_stock = forms.BooleanField(required=False, label=_('Add products under minimum stock'), initial=True)
+
+    class Meta:
+        model = List
+        fields = ['name', 'add_products_under_minimum_stock', 'tags']
+
+
 # Register your models here.
 @admin.register(List)
 class ListAdmin(ListActionModelAdmin):
     pass
-    form = FormWithTags
+    form = ListAdminForm
     search_fields = ['name']
     inlines = [ItemInline]
     list_display = ['name', 'num_items', 'display_tags']
@@ -38,6 +49,37 @@ class ListAdmin(ListActionModelAdmin):
     @admin.display(description=_('Number of items'))
     def num_items(self, obj):
         return obj.num_items
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if form.cleaned_data.get('add_products_under_minimum_stock'):
+            product_stocks = (ProductStock.objects.values('product')
+                              .annotate(total_stock=Sum('stock')))
+
+            minimum_product_stocks = (MinimumProductStock.objects
+                                      .select_related('product')
+                                      .annotate(total_minimum_stock=Sum('minimum_stock'))
+                                      .all())
+
+            product_stock_dict = {ps['product']: ps['total_stock'] for ps in product_stocks}
+            existing_item_dict = {item.product.pk: item for item in obj.item_set.all()}
+
+            for mps in minimum_product_stocks:
+                current_stock = product_stock_dict.get(mps.product.pk, 0)  # Get the total stock or default to 0
+                stock_needed = mps.minimum_stock - current_stock
+                if stock_needed > 0:
+                    existing_item = existing_item_dict.get(mps.product.pk)
+                    if existing_item:
+                        if existing_item.quantity < stock_needed:
+                            existing_item.quantity = stock_needed
+                            existing_item.save()
+                    else:
+                        Item.objects.create(
+                            product=mps.product,
+                            name=mps.product.name,
+                            quantity=stock_needed,
+                            list=obj,
+                        )
 
 
 @admin.register(Item)
