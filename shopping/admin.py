@@ -134,7 +134,7 @@ class ItemAdmin(ListActionModelAdmin):
     list_display = ['__str__', 'in_cart', 'list', 'display_tags']
     list_filter = [('tags', TagFilter), ('list', admin.RelatedOnlyFieldListFilter)]
     actions = [add_to_cart, remove_from_cart, move_to_inventory]
-    list_actions = ['add_to_cart', 'remove_from_cart', 'move_to_inventory']
+    list_actions = ['add_to_cart', 'remove_from_cart']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
