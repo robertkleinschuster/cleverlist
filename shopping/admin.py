@@ -113,14 +113,28 @@ def remove_from_cart(modeladmin, request, queryset):
     queryset.update(in_cart=False)
 
 
+@admin.action(description=_("Move to inventory"))
+def move_to_inventory(modeladmin, request, queryset):
+    items = queryset.select_related('product', 'list').prefetch_related('tags').all()
+    for item in items:
+        stock = ProductStock(
+            product=item.product,
+            stock=item.quantity,
+            description=f'{_("Shopping List")} "{item.list}": {item}',
+        )
+        stock.save()
+        stock.tags.set(item.tags.all())
+        item.delete()
+
+
 @admin.register(Item)
 class ItemAdmin(ListActionModelAdmin):
     form = FormWithTags
     search_fields = ['name']
     list_display = ['__str__', 'in_cart', 'list', 'display_tags']
     list_filter = [('tags', TagFilter), ('list', admin.RelatedOnlyFieldListFilter)]
-    actions = [add_to_cart, remove_from_cart]
-    list_actions = ['add_to_cart', 'remove_from_cart']
+    actions = [add_to_cart, remove_from_cart, move_to_inventory]
+    list_actions = ['add_to_cart', 'remove_from_cart', 'move_to_inventory']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

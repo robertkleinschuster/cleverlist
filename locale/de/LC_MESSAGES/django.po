@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-11 18:39+0000\n"
+"POT-Creation-Date: 2024-08-11 18:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgid "Locations"
 msgstr "Orte"
 
 #: inventory/admin.py:69 inventory/models.py:11 inventory/models.py:26
-#: inventory/models.py:50 master/models.py:14 master/models.py:23
+#: inventory/models.py:51 master/models.py:14 master/models.py:23
 #: shopping/models.py:10 shopping/models.py:26 todo/admin.py:36
 #: todo/models.py:14
 msgid "Tags"
@@ -58,11 +58,11 @@ msgstr "Inventar"
 msgid "Name"
 msgstr "Bezeichnung"
 
-#: inventory/models.py:14 inventory/models.py:24 inventory/models.py:48
+#: inventory/models.py:14 inventory/models.py:24 inventory/models.py:49
 msgid "Location"
 msgstr "Ort"
 
-#: inventory/models.py:23 inventory/models.py:47 master/models.py:26
+#: inventory/models.py:23 inventory/models.py:48 master/models.py:26
 #: shopping/models.py:22
 msgid "Product"
 msgstr "Produkt"
@@ -71,27 +71,31 @@ msgstr "Produkt"
 msgid "Stock"
 msgstr "Bestand"
 
-#: inventory/models.py:32 inventory/models.py:33
+#: inventory/models.py:27 master/models.py:10
+msgid "Description"
+msgstr "Beschreibung"
+
+#: inventory/models.py:33 inventory/models.py:34
 msgid "Product Stock"
 msgstr "Bestand"
 
-#: inventory/models.py:40
+#: inventory/models.py:41
 msgid "Product with stock"
 msgstr "Produktbestand"
 
-#: inventory/models.py:41
+#: inventory/models.py:42
 msgid "Products with stock"
 msgstr "Produktbestand"
 
-#: inventory/models.py:49
+#: inventory/models.py:50
 msgid "Minimum Stock"
 msgstr "Mindestbestand"
 
-#: inventory/models.py:57
+#: inventory/models.py:58
 msgid "Minimum Product Stock"
 msgstr "Mindestbestand"
 
-#: inventory/models.py:58
+#: inventory/models.py:59
 msgid "Minimum Product Stocks"
 msgstr "Mindestbestände"
 
@@ -106,10 +110,6 @@ msgstr "Stammdaten"
 #: master/models.py:9
 msgid "Color"
 msgstr "Farbe"
-
-#: master/models.py:10
-msgid "Description"
-msgstr "Beschreibung"
 
 #: master/models.py:13
 msgid "Tag"
@@ -134,6 +134,10 @@ msgstr "Im Einkaufswagen"
 #: shopping/admin.py:111
 msgid "Remove from cart"
 msgstr "Nicht im Einkaufswagen"
+
+#: shopping/admin.py:116
+msgid "Move to inventory"
+msgstr "In Bestand verschieben"
 
 #: shopping/apps.py:8
 msgid "Shopping"

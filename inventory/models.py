@@ -24,6 +24,7 @@ class ProductStock(models.Model):
     location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.RESTRICT, verbose_name=_('Location'))
     stock = models.IntegerField(default=0, verbose_name=_('Stock'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
+    description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
 
     def __str__(self):
         return f"{self.product.name}"
