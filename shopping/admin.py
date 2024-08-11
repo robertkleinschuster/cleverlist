@@ -1,10 +1,11 @@
 from django import forms
 from django.contrib import admin
+from django.forms import CheckboxSelectMultiple
 from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
 from inventory.models import MinimumProductStock, ProductStock
-from master.admin import FormWithTags, format_tag, TagFilter
+from master.admin import FormWithTags, format_tag, TagFilter, TagModelChoiceField
 from shopping.models import List, Item
 from django.db.models import Count, Sum
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +17,7 @@ class ItemInline(admin.StackedInline):
     extra = 0  # Number of empty inline forms to display
 
 
-class ListAdminForm(FormWithTags):
+class ListAdminForm(forms.ModelForm):
     pass
     add_products_under_minimum_stock = forms.BooleanField(required=False, label=_('Add products under minimum stock'),
                                                           initial=True)
@@ -24,6 +25,12 @@ class ListAdminForm(FormWithTags):
     class Meta:
         model = List
         fields = ['name', 'add_products_under_minimum_stock', 'tags']
+        widgets = {
+            'tags': CheckboxSelectMultiple,
+        }
+        field_classes = {
+            "tags": TagModelChoiceField,
+        }
 
 
 # Register your models here.
