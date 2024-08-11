@@ -32,7 +32,10 @@ class LocationAdmin(ListActionModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        queryset = queryset.annotate(num_products=Count('productstock__product', distinct=True))
+        queryset = queryset.prefetch_related('tags')
+        queryset = queryset.annotate(
+            num_products=Count('productstock__product', distinct=True)
+        )
         return queryset
 
     @admin.display(description=_('Number of products'))
@@ -43,7 +46,7 @@ class LocationAdmin(ListActionModelAdmin):
 @admin.register(ProductWithStock)
 class ProductWithStockAdmin(ListActionModelAdmin):
     pass
-    list_display = ('name', 'sum_stock', 'display_tags')
+    list_display = ['name', 'sum_locations', 'sum_stock', 'display_locations', 'display_tags']
     inlines = [ProductStockInline]
     search_fields = ['name']
     exclude = ['name', 'tags']
@@ -58,6 +61,12 @@ class ProductWithStockAdmin(ListActionModelAdmin):
         return False
 
     @admin.display(description='Tags')
+    def display_locations(self, obj):
+        return format_html(
+            ', '.join(f'{stock.location} ({stock.stock})' for stock in obj.productstock_set.all())
+        )
+
+    @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = []
         for stock in obj.productstock_set.all():
@@ -67,14 +76,21 @@ class ProductWithStockAdmin(ListActionModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('productstock_set__location')
+        queryset = queryset.prefetch_related('productstock_set__tags')
         queryset = queryset.annotate(
             sum_stock=Sum('productstock__stock'),
+            sum_locations=Count('productstock__location', distinct=True)
         )
         return queryset
 
     @admin.display(description=_('Sum of stock'))
     def sum_stock(self, obj):
         return obj.sum_stock
+
+    @admin.display(description=_('Sum of locations'))
+    def sum_locations(self, obj):
+        return obj.sum_locations
 
 
 @admin.register(MinimumProductStock)
@@ -83,6 +99,11 @@ class MinimumProductStockAdmin(ListActionModelAdmin):
     form = FormWithTags
     list_display = ('__str__', 'display_tags')
     list_filter = [('tags', TagFilter), 'location']
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('tags')
+        return queryset
 
     @admin.display(description='Tags')
     def display_tags(self, obj):

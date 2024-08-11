@@ -31,6 +31,7 @@ class ListAdmin(ListActionModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('tags')
         queryset = queryset.annotate(num_items=Count('item'))
         return queryset
 
@@ -45,6 +46,11 @@ class ItemAdmin(ListActionModelAdmin):
     search_fields = ['name']
     list_display = ['__str__', 'display_tags', 'list']
     list_filter = [('tags', TagFilter), ('list', admin.RelatedOnlyFieldListFilter)]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('tags')
+        return queryset
 
     @admin.display(description='Tags')
     def display_tags(self, obj):

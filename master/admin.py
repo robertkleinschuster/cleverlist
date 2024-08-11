@@ -102,6 +102,11 @@ class ProductAdmin(ListActionModelAdmin):
     search_fields = ['name']
     list_filter = [('tags', TagFilter)]
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('tags')
+        return queryset
+
     @admin.display(description='Tags')
     def display_tags(self, obj):
         tags = obj.tags.all()

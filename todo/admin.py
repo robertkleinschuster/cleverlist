@@ -28,6 +28,11 @@ class TaskAdmin(ListActionModelAdmin):
     actions = [mark_done, mark_pending]
     list_actions = ['mark_done', 'mark_pending']
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('tags')
+        return queryset
+
     @admin.display(description=_('Tags'))
     def display_tags(self, obj):
         tags = obj.tags.all()

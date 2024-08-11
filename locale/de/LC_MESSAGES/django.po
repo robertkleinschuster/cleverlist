@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-11 08:48+0000\n"
+"POT-Creation-Date: 2024-08-11 12:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,13 +26,17 @@ msgstr "Start"
 msgid "None"
 msgstr "[Leer]"
 
-#: inventory/admin.py:38
+#: inventory/admin.py:41
 msgid "Number of products"
 msgstr "Anzahl der Produkte"
 
-#: inventory/admin.py:64
+#: inventory/admin.py:87
 msgid "Sum of stock"
-msgstr "Bestand"
+msgstr "Gesamtbestand"
+
+#: inventory/admin.py:91
+msgid "Sum of locations"
+msgstr "Anzahl der Orte"
 
 #: inventory/apps.py:8
 msgid "Inventory"
@@ -45,7 +49,7 @@ msgstr "Bezeichnung"
 
 #: inventory/models.py:11 inventory/models.py:26 inventory/models.py:50
 #: master/models.py:14 master/models.py:23 shopping/models.py:10
-#: shopping/models.py:26 todo/admin.py:31 todo/models.py:14
+#: shopping/models.py:26 todo/admin.py:36 todo/models.py:14
 msgid "Tags"
 msgstr "Tags"
 
@@ -114,7 +118,7 @@ msgstr "Tag"
 msgid "Products"
 msgstr "Produkte"
 
-#: shopping/admin.py:37
+#: shopping/admin.py:38
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
 
