@@ -92,7 +92,7 @@ class ListAdmin(ListActionModelAdmin):
                                 )
                                 item.save()
                                 item.tags.set(mps.tags.all())
-                else:
+                    else:
                         item = Item(
                             product=mps.product,
                             name=mps.product.name,
