@@ -60,13 +60,13 @@ class ProductWithStockAdmin(ListActionModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    @admin.display(description='Tags')
+    @admin.display(description=_('Locations'))
     def display_locations(self, obj):
         return format_html(
             ', '.join(f'{stock.location} ({stock.stock})' for stock in obj.productstock_set.all())
         )
 
-    @admin.display(description='Tags')
+    @admin.display(description=_('Tags'))
     def display_tags(self, obj):
         tags = []
         for stock in obj.productstock_set.all():
