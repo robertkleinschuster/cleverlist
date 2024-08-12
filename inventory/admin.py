@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.admin.utils import display_for_field
+from django.utils import timezone
 from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
@@ -13,7 +15,20 @@ class ProductStockInline(admin.StackedInline):
     model = ProductStock
     form = FormWithTags
     extra = 0
-    readonly_fields = ['description']
+    readonly_fields = ['update_info']
+
+    fields = ['stock', 'location', 'tags', 'update_info']
+
+    @admin.display(description=_('Updated at'))
+    def update_info(self, obj: ProductStock):
+        updated_at = display_for_field(
+            timezone.localtime(obj.updated_at), obj._meta.get_field('updated_at'), self.admin_site
+        )
+
+        if obj.update_reason:
+            return f'{updated_at}: {obj.update_reason}'
+
+        return updated_at
 
 
 # Register your models here.
@@ -63,8 +78,15 @@ class ProductWithStockAdmin(ListActionModelAdmin):
 
     @admin.display(description=_('Locations'))
     def display_locations(self, obj):
+        location_stock_dict = {}
+        for stock in obj.productstock_set.all():
+            if location_stock_dict.get(stock.location):
+                location_stock_dict[stock.location] += stock.stock
+            else:
+                location_stock_dict[stock.location] = stock.stock
+
         return format_html(
-            ', '.join(f'{stock.location} ({stock.stock})' for stock in obj.productstock_set.all())
+            ', '.join(f'{location} ({stock})' for location, stock in location_stock_dict.items())
         )
 
     @admin.display(description=_('Tags'))

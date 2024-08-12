@@ -27,8 +27,8 @@ class Item(models.Model):
     in_cart = models.BooleanField(default=False, verbose_name=_('In-Cart'))
 
     class Meta:
-        verbose_name = _('Item')
-        verbose_name_plural = _('Items')
+        verbose_name = _('Shopping Item')
+        verbose_name_plural = _('Shopping Items')
 
     def __str__(self):
         product_name = self.product.name if self.product else _('without product')

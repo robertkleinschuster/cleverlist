@@ -24,7 +24,9 @@ class ProductStock(models.Model):
     location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.RESTRICT, verbose_name=_('Location'))
     stock = models.IntegerField(default=0, verbose_name=_('Stock'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
-    description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
+    description = models.TextField(null=True, blank=True, editable=False, verbose_name=_('Description'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated at'))
+    update_reason = models.TextField(null=True, blank=True, verbose_name=_('Update reason'))
 
     def __str__(self):
         return f"{self.product.name}"
@@ -32,6 +34,15 @@ class ProductStock(models.Model):
     class Meta:
         verbose_name = _("Product Stock")
         verbose_name_plural = _("Product Stock")
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            original = ProductStock.objects.get(pk=self.pk)
+
+            if self.update_reason == original.update_reason:
+                self.update_reason = ''
+
+        super(ProductStock, self).save(*args, **kwargs)
 
 
 class ProductWithStock(Product):

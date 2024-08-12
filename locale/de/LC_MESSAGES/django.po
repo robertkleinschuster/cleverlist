@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-11 18:56+0000\n"
+"POT-Creation-Date: 2024-08-12 13:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,26 +26,30 @@ msgstr "Start"
 msgid "None"
 msgstr "[Leer]"
 
-#: inventory/admin.py:41
+#: inventory/admin.py:22 inventory/models.py:28
+msgid "Updated at"
+msgstr "Aktualisiert"
+
+#: inventory/admin.py:57
 msgid "Number of products"
 msgstr "Anzahl der Produkte"
 
-#: inventory/admin.py:63 inventory/models.py:15
+#: inventory/admin.py:79 inventory/models.py:15
 msgid "Locations"
 msgstr "Orte"
 
-#: inventory/admin.py:69 inventory/models.py:11 inventory/models.py:26
-#: inventory/models.py:51 master/models.py:14 master/models.py:23
+#: inventory/admin.py:92 inventory/models.py:11 inventory/models.py:26
+#: inventory/models.py:62 master/models.py:14 master/models.py:23
 #: shopping/models.py:10 shopping/models.py:26 todo/admin.py:36
 #: todo/models.py:14
 msgid "Tags"
 msgstr "Tags"
 
-#: inventory/admin.py:87
+#: inventory/admin.py:111
 msgid "Sum of stock"
 msgstr "Gesamtbestand"
 
-#: inventory/admin.py:91
+#: inventory/admin.py:115
 msgid "Sum of locations"
 msgstr "Anzahl der Orte"
 
@@ -58,11 +62,11 @@ msgstr "Inventar"
 msgid "Name"
 msgstr "Bezeichnung"
 
-#: inventory/models.py:14 inventory/models.py:24 inventory/models.py:49
+#: inventory/models.py:14 inventory/models.py:24 inventory/models.py:60
 msgid "Location"
 msgstr "Ort"
 
-#: inventory/models.py:23 inventory/models.py:48 master/models.py:26
+#: inventory/models.py:23 inventory/models.py:59 master/models.py:26
 #: shopping/models.py:22
 msgid "Product"
 msgstr "Produkt"
@@ -75,27 +79,31 @@ msgstr "Bestand"
 msgid "Description"
 msgstr "Beschreibung"
 
-#: inventory/models.py:33 inventory/models.py:34
+#: inventory/models.py:29
+msgid "Update reason"
+msgstr "Aktualisierungsgrund"
+
+#: inventory/models.py:35 inventory/models.py:36
 msgid "Product Stock"
 msgstr "Bestand"
 
-#: inventory/models.py:41
+#: inventory/models.py:52
 msgid "Product with stock"
 msgstr "Produktbestand"
 
-#: inventory/models.py:42
+#: inventory/models.py:53
 msgid "Products with stock"
 msgstr "Produktbestand"
 
-#: inventory/models.py:50
+#: inventory/models.py:61
 msgid "Minimum Stock"
 msgstr "Mindestbestand"
 
-#: inventory/models.py:58
+#: inventory/models.py:69
 msgid "Minimum Product Stock"
 msgstr "Mindestbestand"
 
-#: inventory/models.py:59
+#: inventory/models.py:70
 msgid "Minimum Product Stocks"
 msgstr "Mindestbestände"
 
@@ -139,6 +147,16 @@ msgstr "Nicht im Einkaufswagen"
 msgid "Move to inventory"
 msgstr "In Bestand verschieben"
 
+#: shopping/admin.py:131
+#, python-format
+msgid "Shopping item “%(item)s” from “%(list)s” added."
+msgstr "Einkaufsartikel “%(item)s” von “%(list)s” hinzugefügt."
+
+#: shopping/admin.py:134
+#, python-format
+msgid "Shopping item “%(item)s” added."
+msgstr "Einkaufsartikel “%(item)s” hinzugefügt."
+
 #: shopping/apps.py:8
 msgid "Shopping"
 msgstr "Einkaufen"
@@ -160,12 +178,12 @@ msgid "In-Cart"
 msgstr "Im Einkaufswagen"
 
 #: shopping/models.py:30
-msgid "Item"
-msgstr "Artikel"
+msgid "Shopping Item"
+msgstr "Einkaufsartikel"
 
 #: shopping/models.py:31
-msgid "Items"
-msgstr "Artikel"
+msgid "Shopping Items"
+msgstr "Einkaufsartikel"
 
 #: shopping/models.py:34
 msgid "without product"

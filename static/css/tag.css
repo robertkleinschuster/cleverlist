@@ -11,7 +11,7 @@
 }
 
 #changelist-filter .tag:before,
-#id_tags .tag:before {
+.field-tags .related-widget-wrapper > div .tag:before {
     content: "\2713"; /* Unicode checkmark */
     display: inline-flex;
     align-items: center;
@@ -32,7 +32,7 @@
 }
 
 #changelist-filter .tag,
-#id_tags .tag {
+.field-tags .related-widget-wrapper > div .tag {
     padding: 4px 8px;
 }
 
@@ -40,12 +40,12 @@
     background-color: #333;
 }
 
-#id_tags input:checked ~ .tag:before {
+.field-tags .related-widget-wrapper > div input:checked ~ .tag:before {
     background-color: #333;
     color: #fff;
 }
 
-#id_tags {
+.field-tags .related-widget-wrapper > div {
     display: flex;
     flex-wrap: wrap;
     max-height: 200px;
@@ -53,13 +53,13 @@
     gap: 4px;
 }
 
-#id_tags label {
+.field-tags .related-widget-wrapper > div label {
     width: auto;
     min-width: 0;
     padding: 0;
 }
 
-#id_tags input {
+.field-tags .related-widget-wrapper > div input {
     display: none;
 }
 

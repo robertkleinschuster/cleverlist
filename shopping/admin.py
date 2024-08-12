@@ -127,13 +127,21 @@ def move_to_inventory(modeladmin, request, queryset):
 
         stock = stock_queryset.first()
 
+        if item.list:
+            update_reason = _('Shopping item “%(item)s” from “%(list)s” added.') % {'list': str(item.list),
+                                                                                    'item': str(item)}
+        else:
+            update_reason = _('Shopping item “%(item)s” added.') % {'item': str(item)}
+
         if stock:
             stock.stock += item.quantity
+            stock.update_reason = update_reason
             stock.save()
         else:
             stock = ProductStock(
                 product=item.product,
-                stock=item.quantity
+                stock=item.quantity,
+                update_reason=update_reason
             )
             stock.save()
             stock.tags.set(item.tags.all())
@@ -146,7 +154,7 @@ class ItemAdmin(ListActionModelAdmin):
     form = FormWithTags
     search_fields = ['name']
     list_display = ['__str__', 'in_cart', 'list', 'display_tags']
-    list_filter = [('tags', TagFilter), ('list', admin.RelatedOnlyFieldListFilter)]
+    list_filter = ['in_cart', ('list', admin.RelatedOnlyFieldListFilter), ('tags', TagFilter)]
     actions = [add_to_cart, remove_from_cart, move_to_inventory]
     list_actions = ['add_to_cart', 'remove_from_cart']
 
