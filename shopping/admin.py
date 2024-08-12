@@ -127,21 +127,13 @@ def move_to_inventory(modeladmin, request, queryset):
 
         stock = stock_queryset.first()
 
-        description = f'{_("Shopping List")} "{item.list}": {item}'
-
         if stock:
             stock.stock += item.quantity
-            if stock.description:
-                stock.description += f'\n{description}'
-            else:
-                stock.description = description
-
             stock.save()
         else:
             stock = ProductStock(
                 product=item.product,
-                stock=item.quantity,
-                description=description
+                stock=item.quantity
             )
             stock.save()
             stock.tags.set(item.tags.all())
