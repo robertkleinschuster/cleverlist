@@ -72,7 +72,8 @@ class ProductWithStockAdmin(ListActionModelAdmin):
         tags = []
         for stock in obj.productstock_set.all():
             for tag in stock.tags.all():
-                tags.append(tag)
+                if tag not in tags:
+                    tags.append(tag)
         return format_html(' '.join(format_tag(tag) for tag in tags))
 
     def get_queryset(self, request):
