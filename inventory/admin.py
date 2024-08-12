@@ -13,6 +13,7 @@ class ProductStockInline(admin.StackedInline):
     model = ProductStock
     form = FormWithTags
     extra = 0
+    readonly_fields = ['description']
 
 
 # Register your models here.

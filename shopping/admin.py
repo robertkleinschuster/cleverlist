@@ -117,13 +117,35 @@ def remove_from_cart(modeladmin, request, queryset):
 def move_to_inventory(modeladmin, request, queryset):
     items = queryset.select_related('product', 'list').prefetch_related('tags').all()
     for item in items:
-        stock = ProductStock(
-            product=item.product,
-            stock=item.quantity,
-            description=f'{_("Shopping List")} "{item.list}": {item}',
-        )
-        stock.save()
-        stock.tags.set(item.tags.all())
+        tags = item.tags.all()
+        stock_queryset = ProductStock.objects.filter(product=item.product)
+        if len(tags):
+            stock_queryset = stock_queryset.filter(tags__in=tags).distinct()
+            stock_queryset = stock_queryset.annotate(num_tags=Count('tags', distinct=True)).filter(num_tags=len(tags))
+        else:
+            stock_queryset = stock_queryset.filter(location=None).annotate(num_tags=Count('tags')).filter(num_tags=0)
+
+        stock = stock_queryset.first()
+
+        description = f'{_("Shopping List")} "{item.list}": {item}'
+
+        if stock:
+            stock.stock += item.quantity
+            if stock.description:
+                stock.description += f'\n{description}'
+            else:
+                stock.description = description
+
+            stock.save()
+        else:
+            stock = ProductStock(
+                product=item.product,
+                stock=item.quantity,
+                description=description
+            )
+            stock.save()
+            stock.tags.set(item.tags.all())
+
         item.delete()
 
 
