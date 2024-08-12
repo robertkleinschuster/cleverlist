@@ -62,7 +62,7 @@ class LocationAdmin(ListActionModelAdmin):
 @admin.register(ProductWithStock)
 class ProductWithStockAdmin(ListActionModelAdmin):
     pass
-    list_display = ['name', 'sum_locations', 'sum_stock', 'display_locations', 'display_tags']
+    list_display = ['name', 'sum_stock', 'display_locations', 'display_tags']
     inlines = [ProductStockInline]
     search_fields = ['name']
     exclude = ['name', 'tags']
@@ -103,18 +103,13 @@ class ProductWithStockAdmin(ListActionModelAdmin):
         queryset = queryset.prefetch_related('productstock_set__location')
         queryset = queryset.prefetch_related('productstock_set__tags')
         queryset = queryset.annotate(
-            sum_stock=Sum('productstock__stock'),
-            sum_locations=Count('productstock__location', distinct=True)
+            sum_stock=Sum('productstock__stock')
         )
         return queryset
 
     @admin.display(description=_('Sum of stock'))
     def sum_stock(self, obj):
         return obj.sum_stock
-
-    @admin.display(description=_('Sum of locations'))
-    def sum_locations(self, obj):
-        return obj.sum_locations
 
 
 @admin.register(MinimumProductStock)
