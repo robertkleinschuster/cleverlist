@@ -24,13 +24,51 @@ class ListAdminForm(forms.ModelForm):
 
     class Meta:
         model = List
-        fields = ['name', 'add_products_under_minimum_stock', 'tags']
+        fields = ['name', 'tags', 'add_products_under_minimum_stock']
         widgets = {
             'tags': CheckboxSelectMultiple,
         }
         field_classes = {
             "tags": TagModelChoiceField,
         }
+
+
+def find_items_under_stock(obj):
+    product_stocks = (ProductStock.objects.values('product')
+                      .annotate(total_stock=Sum('stock')))
+
+    minimum_product_stocks = (MinimumProductStock.objects
+                              .select_related('product')
+                              .annotate(total_minimum_stock=Sum('minimum_stock'))
+                              .all())
+
+    product_stock_dict = {ps['product']: ps['total_stock'] for ps in product_stocks}
+    existing_item_dict = {item.product.pk: item for item in Item.objects.all()}
+
+    for mps in minimum_product_stocks:
+        current_stock = product_stock_dict.get(mps.product.pk, 0)
+        stock_needed = mps.minimum_stock - current_stock
+        if stock_needed > 0:
+            existing_item = existing_item_dict.get(mps.product.pk)
+            if existing_item:
+                if existing_item.quantity < stock_needed:
+                    if existing_item.list_id == obj.id:
+                        existing_item.quantity = stock_needed
+                        existing_item.save()
+                    else:
+                        yield Item(
+                            product=mps.product,
+                            name=mps.product.name,
+                            quantity=stock_needed - existing_item.quantity,
+                            list=obj,
+                        )
+            else:
+                yield Item(
+                    product=mps.product,
+                    name=mps.product.name,
+                    quantity=stock_needed,
+                    list=obj,
+                )
 
 
 # Register your models here.
@@ -42,6 +80,12 @@ class ListAdmin(ListActionModelAdmin):
     inlines = [ItemInline]
     list_display = ['name', 'num_items', 'display_tags']
     list_filter = [('tags', TagFilter)]
+
+    readonly_fields = ['products_under_stock']
+
+    @admin.display(description=_('Products under stock'))
+    def products_under_stock(self, obj):
+        return "\n".join([str(item) for item in find_items_under_stock(obj)])
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
@@ -61,46 +105,8 @@ class ListAdmin(ListActionModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if form.cleaned_data.get('add_products_under_minimum_stock'):
-            product_stocks = (ProductStock.objects.values('product')
-                              .annotate(total_stock=Sum('stock')))
-
-            minimum_product_stocks = (MinimumProductStock.objects
-                                      .select_related('product')
-                                      .prefetch_related('tags')
-                                      .annotate(total_minimum_stock=Sum('minimum_stock'))
-                                      .all())
-
-            product_stock_dict = {ps['product']: ps['total_stock'] for ps in product_stocks}
-            existing_item_dict = {item.product.pk: item for item in Item.objects.all()}
-
-            for mps in minimum_product_stocks:
-                current_stock = product_stock_dict.get(mps.product.pk, 0)
-                stock_needed = mps.minimum_stock - current_stock
-                if stock_needed > 0:
-                    existing_item = existing_item_dict.get(mps.product.pk)
-                    if existing_item:
-                        if existing_item.quantity < stock_needed:
-                            if existing_item.list_id == obj.id:
-                                existing_item.quantity = stock_needed
-                                existing_item.save()
-                            else:
-                                item = Item(
-                                    product=mps.product,
-                                    name=mps.product.name,
-                                    quantity=stock_needed - existing_item.quantity,
-                                    list=obj,
-                                )
-                                item.save()
-                                item.tags.set(mps.tags.all())
-                    else:
-                        item = Item(
-                            product=mps.product,
-                            name=mps.product.name,
-                            quantity=stock_needed,
-                            list=obj,
-                        )
-                        item.save()
-                        item.tags.set(mps.tags.all())
+            for item in find_items_under_stock(obj):
+                item.save()
 
 
 @admin.action(description=_("Add to cart"))
