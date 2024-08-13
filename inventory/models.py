@@ -1,4 +1,7 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 from master.models import Product, Tag
 from django.utils.translation import gettext_lazy as _
 
@@ -65,6 +68,22 @@ class MinimumProductStock(models.Model):
         return f"{self.minimum_stock} x {self.product.name} ({self.location.name})"
 
     class Meta:
-        unique_together = ('product', 'location')
         verbose_name = _("Minimum Product Stock")
         verbose_name_plural = _("Minimum Product Stocks")
+
+
+@receiver(post_save, sender=MinimumProductStock)
+@receiver(post_save, sender=ProductStock)
+def add_default_tags(sender, instance, created, **kwargs):
+    if created:
+        tags = list(instance.tags.all())
+        if instance.product:
+            for tag in instance.product.tags.all():
+                if tag not in tags:
+                    tags.append(tag)
+        if instance.location:
+            for tag in instance.location.tags.all():
+                if tag not in tags:
+                    tags.append(tag)
+        if len(tags) > 0 and (instance.location or instance.product):
+            transaction.on_commit(lambda: instance.tags.add(*tags))

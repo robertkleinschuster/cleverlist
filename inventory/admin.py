@@ -17,7 +17,7 @@ class ProductStockInline(admin.StackedInline):
     extra = 0
     readonly_fields = ['update_info']
 
-    fields = ['stock', 'location', 'tags', 'update_info']
+    fields = ['stock', 'product', 'location', 'tags', 'update_info']
 
     @admin.display(description=_('Updated at'))
     def update_info(self, obj: ProductStock):

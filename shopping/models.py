@@ -1,4 +1,6 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from master.models import Product, Tag
 
@@ -40,3 +42,19 @@ class Item(models.Model):
         if not self.name and self.product:
             self.name = self.product.name
         super().save(*args, **kwargs)
+
+
+@receiver(post_save, sender=Item)
+def add_default_tags(sender, instance, created, **kwargs):
+    if created:
+        tags = list(instance.tags.all())
+        if instance.product:
+            for tag in instance.product.tags.all():
+                if tag not in tags:
+                    tags.append(tag)
+        if instance.list:
+            for tag in instance.list.tags.all():
+                if tag not in tags:
+                    tags.append(tag)
+        if len(tags) > 0 and (instance.list or instance.product):
+            transaction.on_commit(lambda: instance.tags.add(*tags))
