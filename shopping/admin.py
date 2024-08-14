@@ -22,7 +22,7 @@ class ListAdminForm(forms.ModelForm):
     products_under_stock = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
         choices=[],
-        label=_('Products under stock'),
+        label=_('Add products under minimum stock'),
         required=False,
     )
 

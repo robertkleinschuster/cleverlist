@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-13 21:04+0000\n"
+"POT-Creation-Date: 2024-08-14 13:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -103,7 +103,7 @@ msgstr "Mindestbestand"
 msgid "Minimum Product Stocks"
 msgstr "Mindestbestände"
 
-#: master/admin.py:45
+#: master/admin.py:29
 msgid "All"
 msgstr "Alle"
 
@@ -123,36 +123,32 @@ msgstr "Tag"
 msgid "Products"
 msgstr "Produkte"
 
-#: shopping/admin.py:22
+#: shopping/admin.py:25
 msgid "Add products under minimum stock"
 msgstr "Produkte unter Mindestbestand hinzufügen"
 
-#: shopping/admin.py:86
-msgid "Products under stock"
-msgstr "Produkte unter Mindestbestand"
-
-#: shopping/admin.py:101
+#: shopping/admin.py:98
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
 
-#: shopping/admin.py:112
+#: shopping/admin.py:116
 msgid "Add to cart"
 msgstr "Im Einkaufswagen"
 
-#: shopping/admin.py:117
+#: shopping/admin.py:121
 msgid "Remove from cart"
 msgstr "Nicht im Einkaufswagen"
 
-#: shopping/admin.py:122
+#: shopping/admin.py:126
 msgid "Move to inventory"
 msgstr "In Bestand verschieben"
 
-#: shopping/admin.py:137
+#: shopping/admin.py:141
 #, python-format
 msgid "Shopping item “%(item)s” from “%(list)s” added."
 msgstr "Einkaufsartikel “%(item)s” von “%(list)s” hinzugefügt."
 
-#: shopping/admin.py:140
+#: shopping/admin.py:144
 #, python-format
 msgid "Shopping item “%(item)s” added."
 msgstr "Einkaufsartikel “%(item)s” hinzugefügt."
