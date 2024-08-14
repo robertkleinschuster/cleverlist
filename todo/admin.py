@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from cleverlist.admin import ListActionModelAdmin
-from master.admin import FormWithTags, format_tag, TagFilter
+from master.admin import format_tag, TagFilter
 from todo.models import Task, PendingTask
 
 
@@ -22,11 +22,11 @@ def mark_pending(modeladmin, request, queryset):
 @admin.register(Task)
 class TaskAdmin(ListActionModelAdmin):
     pass
-    form = FormWithTags
     list_display = ['name', 'display_tags', 'deadline', 'done']
     list_filter = [('tags', TagFilter), 'done']
     actions = [mark_done, mark_pending]
     list_actions = ['mark_done', 'mark_pending']
+    autocomplete_fields = ['tags', 'shoppinglist']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

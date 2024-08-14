@@ -3,7 +3,6 @@ import operator
 from django.contrib import admin
 from django import forms
 from django.contrib.admin.utils import get_model_from_relation
-from django.forms import ModelMultipleChoiceField, CheckboxSelectMultiple
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -16,21 +15,6 @@ def format_tag(tag: Tag) -> str:
     return format_html(
         f'<span title="{tag.description}" class="tag" style="background-color: {tag.color}">{tag.name}</span>'
     )
-
-
-class TagModelChoiceField(ModelMultipleChoiceField):
-    def label_from_instance(self, obj):
-        return format_tag(obj)
-
-
-class FormWithTags(forms.ModelForm):
-    class Meta:
-        widgets = {
-            'tags': CheckboxSelectMultiple,
-        }
-        field_classes = {
-            "tags": TagModelChoiceField,
-        }
 
 
 class TagFilter(admin.RelatedFieldListFilter):
@@ -97,10 +81,10 @@ class TagFilter(admin.RelatedFieldListFilter):
 @admin.register(Product)
 class ProductAdmin(ListActionModelAdmin):
     pass
-    form = FormWithTags
     list_display = ['name', 'display_tags']
     search_fields = ['name']
     list_filter = [('tags', TagFilter)]
+    autocomplete_fields = ['tags']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -124,7 +108,7 @@ class TagForm(forms.ModelForm):
 class TagAdmin(admin.ModelAdmin):
     pass
     form = TagForm
-
+    search_fields = ['name']
     list_display = ('display_name', 'description')
 
     @admin.display(description='Tags')

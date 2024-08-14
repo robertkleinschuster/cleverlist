@@ -1,11 +1,10 @@
 from django import forms
 from django.contrib import admin
-from django.forms import CheckboxSelectMultiple
 from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
 from inventory.models import MinimumProductStock, ProductStock
-from master.admin import FormWithTags, format_tag, TagFilter, TagModelChoiceField
+from master.admin import format_tag, TagFilter
 from shopping.models import List, Item
 from django.db.models import Count, Sum
 from django.utils.translation import gettext_lazy as _
@@ -13,8 +12,8 @@ from django.utils.translation import gettext_lazy as _
 
 class ItemInline(admin.StackedInline):
     model = Item
-    form = FormWithTags
     extra = 0  # Number of empty inline forms to display
+    autocomplete_fields = ['product', 'list', 'tags']
 
 
 class ListAdminForm(forms.ModelForm):
@@ -25,12 +24,6 @@ class ListAdminForm(forms.ModelForm):
     class Meta:
         model = List
         fields = ['name', 'tags', 'add_products_under_minimum_stock']
-        widgets = {
-            'tags': CheckboxSelectMultiple,
-        }
-        field_classes = {
-            "tags": TagModelChoiceField,
-        }
 
 
 def find_items_under_stock(obj):
@@ -80,7 +73,7 @@ class ListAdmin(ListActionModelAdmin):
     inlines = [ItemInline]
     list_display = ['name', 'num_items', 'display_tags']
     list_filter = [('tags', TagFilter)]
-
+    autocomplete_fields = ['tags']
     readonly_fields = ['products_under_stock']
 
     @admin.display(description=_('Products under stock'))
@@ -157,12 +150,12 @@ def move_to_inventory(modeladmin, request, queryset):
 
 @admin.register(Item)
 class ItemAdmin(ListActionModelAdmin):
-    form = FormWithTags
     search_fields = ['name']
     list_display = ['__str__', 'in_cart', 'list', 'display_tags']
     list_filter = ['in_cart', ('list', admin.RelatedOnlyFieldListFilter), ('tags', TagFilter)]
     actions = [add_to_cart, remove_from_cart, move_to_inventory]
     list_actions = ['add_to_cart', 'remove_from_cart']
+    autocomplete_fields = ['product', 'list', 'tags']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

@@ -10,60 +10,25 @@
     border: 1px solid #00000055;
 }
 
-#changelist-filter .tag:before,
-.field-tags .related-widget-wrapper > div .tag:before {
-    content: "\2713"; /* Unicode checkmark */
+#changelist-filter .tag:before {
+    content: "";
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 14px;
     height: 14px;
     border: 1px solid #333;
-    border-radius: 3px;
+    box-shadow: inset 0 0 0 2px #fff;
+    border-radius: 100%;
     background-color: #fff;
     color: #fff;
     box-sizing: border-box;
 }
 
-#changelist-filter .tag:before {
-    content: "";
-    box-shadow: inset 0 0 0 2px #fff;
-    border-radius: 100%;
-}
-
-#changelist-filter .tag,
-.field-tags .related-widget-wrapper > div .tag {
+#changelist-filter .tag {
     padding: 4px 8px;
 }
 
 #changelist-filter .selected .tag:before {
     background-color: #333;
-}
-
-.field-tags .related-widget-wrapper > div input:checked ~ .tag:before {
-    background-color: #333;
-    color: #fff;
-}
-
-.field-tags .related-widget-wrapper > div {
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 200px;
-    overflow: auto;
-    gap: 4px;
-}
-
-.field-tags .related-widget-wrapper > div label {
-    width: auto;
-    min-width: 0;
-    padding: 0;
-}
-
-.field-tags .related-widget-wrapper > div input {
-    display: none;
-}
-
-#add_id_tags {
-    margin-top: 8px;
-    flex-basis: 100%;
 }

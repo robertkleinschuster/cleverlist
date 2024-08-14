@@ -8,16 +8,16 @@ from inventory.models import Location, ProductStock, ProductWithStock, MinimumPr
 from django.db.models import Sum, Count
 from django.utils.translation import gettext_lazy as _
 
-from master.admin import FormWithTags, format_tag, TagFilter
+from master.admin import format_tag, TagFilter
 
 
 class ProductStockInline(admin.StackedInline):
     model = ProductStock
-    form = FormWithTags
     extra = 0
     readonly_fields = ['update_info']
 
     fields = ['stock', 'product', 'location', 'tags', 'update_info']
+    autocomplete_fields = ['product', 'location', 'tags']
 
     @admin.display(description=_('Updated at'))
     def update_info(self, obj: ProductStock):
@@ -35,11 +35,11 @@ class ProductStockInline(admin.StackedInline):
 @admin.register(Location)
 class LocationAdmin(ListActionModelAdmin):
     pass
-    form = FormWithTags
     inlines = [ProductStockInline]
     list_display = ('name', 'num_products', 'display_tags')
     search_fields = ['name']
     list_filter = [('tags', TagFilter)]
+    autocomplete_fields = ['tags']
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
@@ -115,9 +115,9 @@ class ProductWithStockAdmin(ListActionModelAdmin):
 @admin.register(MinimumProductStock)
 class MinimumProductStockAdmin(ListActionModelAdmin):
     pass
-    form = FormWithTags
     list_display = ('__str__', 'display_tags')
     list_filter = [('tags', TagFilter), 'location']
+    autocomplete_fields = ['product', 'location', 'tags']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
