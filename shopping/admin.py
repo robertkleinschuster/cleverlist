@@ -18,12 +18,24 @@ class ItemInline(admin.StackedInline):
 
 class ListAdminForm(forms.ModelForm):
     pass
-    add_products_under_minimum_stock = forms.BooleanField(required=False, label=_('Add products under minimum stock'),
-                                                          initial=True)
+
+    products_under_stock = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        choices=[],
+        label=_('Products under stock'),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ListAdminForm, self).__init__(*args, **kwargs)
+
+        self.fields['products_under_stock'].choices = [
+            (item.product.id, str(item)) for item in find_items_under_stock(self.instance)
+        ]
 
     class Meta:
         model = List
-        fields = ['name', 'tags', 'add_products_under_minimum_stock']
+        fields = ['name', 'tags', 'products_under_stock']
 
 
 def find_items_under_stock(obj):
@@ -45,7 +57,7 @@ def find_items_under_stock(obj):
             existing_item = existing_item_dict.get(mps.product.pk)
             if existing_item:
                 if existing_item.quantity < stock_needed:
-                    if existing_item.list_id == obj.id:
+                    if obj and existing_item.list_id == obj.id:
                         existing_item.quantity = stock_needed
                         existing_item.save()
                     else:
@@ -74,11 +86,6 @@ class ListAdmin(ListActionModelAdmin):
     list_display = ['name', 'num_items', 'display_tags']
     list_filter = [('tags', TagFilter)]
     autocomplete_fields = ['tags']
-    readonly_fields = ['products_under_stock']
-
-    @admin.display(description=_('Products under stock'))
-    def products_under_stock(self, obj):
-        return "\n".join([str(item) for item in find_items_under_stock(obj)])
 
     @admin.display(description='Tags')
     def display_tags(self, obj):
@@ -97,9 +104,11 @@ class ListAdmin(ListActionModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        if form.cleaned_data.get('add_products_under_minimum_stock'):
+        products_to_add = [int(product_id) for product_id in form.cleaned_data['products_under_stock']]
+        if len(products_to_add):
             for item in find_items_under_stock(obj):
-                item.save()
+                if item.product.id in products_to_add:
+                    item.save()
 
 
 @admin.action(description=_("Add to cart"))
