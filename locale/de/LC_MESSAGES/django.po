@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-14 13:33+0000\n"
+"POT-Creation-Date: 2024-08-15 17:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,82 +26,86 @@ msgstr "Start"
 msgid "None"
 msgstr "[Leer]"
 
-#: inventory/admin.py:22 inventory/models.py:31
+#: inventory/admin.py:22 inventory/models.py:33
 msgid "Updated at"
 msgstr "Aktualisiert"
 
-#: inventory/admin.py:57
+#: inventory/admin.py:63
 msgid "Number of products"
 msgstr "Anzahl der Produkte"
 
-#: inventory/admin.py:79 inventory/models.py:18
+#: inventory/admin.py:86 inventory/models.py:40 inventory/models.py:41
+msgid "Product Stock"
+msgstr "Bestand"
+
+#: inventory/admin.py:90 inventory/models.py:64
+msgid "Minimum Product Stock"
+msgstr "Mindestbestand"
+
+#: inventory/admin.py:94
+msgid "Stock Needed"
+msgstr "Fehlender Bestand"
+
+#: inventory/admin.py:100 inventory/models.py:20
 msgid "Locations"
 msgstr "Orte"
 
-#: inventory/admin.py:92 inventory/models.py:14 inventory/models.py:29
-#: inventory/models.py:65 master/models.py:14 master/models.py:23
+#: inventory/admin.py:107
+msgid "No location"
+msgstr "Kein Ort"
+
+#: inventory/admin.py:118 inventory/models.py:16 inventory/models.py:31
+#: inventory/models.py:58 master/models.py:14 master/models.py:23
 #: shopping/models.py:12 shopping/models.py:28 todo/admin.py:36
 #: todo/models.py:14
 msgid "Tags"
 msgstr "Tags"
 
-#: inventory/admin.py:110
-msgid "Sum of stock"
-msgstr "Gesamtbestand"
-
 #: inventory/apps.py:8
 msgid "Inventory"
 msgstr "Inventar"
 
-#: inventory/models.py:13 master/models.py:8 master/models.py:22
+#: inventory/models.py:15 master/models.py:8 master/models.py:22
 #: shopping/models.py:11 shopping/models.py:25
 msgid "Name"
 msgstr "Bezeichnung"
 
-#: inventory/models.py:17 inventory/models.py:27 inventory/models.py:63
+#: inventory/models.py:19 inventory/models.py:29 inventory/models.py:56
 msgid "Location"
 msgstr "Ort"
 
-#: inventory/models.py:26 inventory/models.py:62 master/models.py:26
+#: inventory/models.py:28 inventory/models.py:55 master/models.py:26
 #: shopping/models.py:24
 msgid "Product"
 msgstr "Produkt"
 
-#: inventory/models.py:28
+#: inventory/models.py:30
 msgid "Stock"
 msgstr "Bestand"
 
-#: inventory/models.py:30 master/models.py:10
+#: inventory/models.py:32 master/models.py:10
 msgid "Description"
 msgstr "Beschreibung"
 
-#: inventory/models.py:32
+#: inventory/models.py:34
 msgid "Update reason"
 msgstr "Aktualisierungsgrund"
 
-#: inventory/models.py:38 inventory/models.py:39
-msgid "Product Stock"
-msgstr "Bestand"
-
-#: inventory/models.py:55
-msgid "Product with stock"
-msgstr "Produktbestand"
-
-#: inventory/models.py:56
-msgid "Products with stock"
-msgstr "Produktbestand"
-
-#: inventory/models.py:64
+#: inventory/models.py:57
 msgid "Minimum Stock"
 msgstr "Mindestbestand"
 
-#: inventory/models.py:71
-msgid "Minimum Product Stock"
-msgstr "Mindestbestand"
-
-#: inventory/models.py:72
+#: inventory/models.py:65
 msgid "Minimum Product Stocks"
 msgstr "Mindestbestände"
+
+#: inventory/models.py:101
+msgid "Product with stock"
+msgstr "Produktbestand"
+
+#: inventory/models.py:102
+msgid "Products with stock"
+msgstr "Produktbestand"
 
 #: master/admin.py:29
 msgid "All"
@@ -127,28 +131,28 @@ msgstr "Produkte"
 msgid "Add products under minimum stock"
 msgstr "Produkte unter Mindestbestand hinzufügen"
 
-#: shopping/admin.py:98
+#: shopping/admin.py:91
 msgid "Number of items"
 msgstr "Anzahl der Artikel"
 
-#: shopping/admin.py:116
+#: shopping/admin.py:106
 msgid "Add to cart"
 msgstr "Im Einkaufswagen"
 
-#: shopping/admin.py:121
+#: shopping/admin.py:111
 msgid "Remove from cart"
 msgstr "Nicht im Einkaufswagen"
 
-#: shopping/admin.py:126
+#: shopping/admin.py:116
 msgid "Move to inventory"
 msgstr "In Bestand verschieben"
 
-#: shopping/admin.py:141
+#: shopping/admin.py:131
 #, python-format
 msgid "Shopping item “%(item)s” from “%(list)s” added."
 msgstr "Einkaufsartikel “%(item)s” von “%(list)s” hinzugefügt."
 
-#: shopping/admin.py:144
+#: shopping/admin.py:134
 #, python-format
 msgid "Shopping item “%(item)s” added."
 msgstr "Einkaufsartikel “%(item)s” hinzugefügt."

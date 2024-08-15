@@ -5,7 +5,7 @@ from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
 from inventory.models import Location, ProductStock, ProductWithStock, MinimumProductStock
-from django.db.models import Sum, Count
+from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 from master.admin import format_tag, TagFilter
@@ -31,11 +31,17 @@ class ProductStockInline(admin.StackedInline):
         return updated_at
 
 
+class MinimumProductStockInline(admin.StackedInline):
+    pass
+    model = MinimumProductStock
+    extra = 0
+    autocomplete_fields = ['product', 'location', 'tags']
+
+
 # Register your models here.
 @admin.register(Location)
 class LocationAdmin(ListActionModelAdmin):
     pass
-    inlines = [ProductStockInline]
     list_display = ('name', 'num_products', 'display_tags')
     search_fields = ['name']
     list_filter = [('tags', TagFilter)]
@@ -62,10 +68,11 @@ class LocationAdmin(ListActionModelAdmin):
 @admin.register(ProductWithStock)
 class ProductWithStockAdmin(ListActionModelAdmin):
     pass
-    list_display = ['name', 'sum_stock', 'display_locations', 'display_tags']
-    inlines = [ProductStockInline]
+    list_display = ['name', 'stock', 'minimum_stock', 'stock_needed', 'display_locations', 'display_tags']
+    inlines = [ProductStockInline, MinimumProductStockInline]
     search_fields = ['name']
     exclude = ['name', 'tags']
+    list_filter = [('productstock__tags', TagFilter)]
 
     def has_change_permission(self, request, obj=None):
         return True
@@ -76,14 +83,33 @@ class ProductWithStockAdmin(ListActionModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    @admin.display(description=_('Product Stock'))
+    def stock(self, obj):
+        return obj.stock
+
+    @admin.display(description=_('Minimum Product Stock'))
+    def minimum_stock(self, obj):
+        return obj.minimum_stock
+
+    @admin.display(description=_('Stock Needed'))
+    def stock_needed(self, obj):
+        if obj.stock_needed > 0:
+            return format_html('<span style="color: red">{}</span>', obj.stock_needed)
+        return format_html('<span style="color: green">{}</span>', obj.stock_needed)
+
     @admin.display(description=_('Locations'))
     def display_locations(self, obj):
         location_stock_dict = {}
         for stock in obj.productstock_set.all():
-            if location_stock_dict.get(stock.location):
-                location_stock_dict[stock.location] += stock.stock
+            if stock.location:
+                location = str(stock.location)
             else:
-                location_stock_dict[stock.location] = stock.stock
+                location = _('No location')
+
+            if location_stock_dict.get(location):
+                location_stock_dict[location] += stock.stock
+            else:
+                location_stock_dict[location] = stock.stock
 
         return format_html(
             ', '.join(f'{location} ({stock})' for location, stock in location_stock_dict.items())
@@ -102,29 +128,4 @@ class ProductWithStockAdmin(ListActionModelAdmin):
         queryset = super().get_queryset(request)
         queryset = queryset.prefetch_related('productstock_set__location')
         queryset = queryset.prefetch_related('productstock_set__tags')
-        queryset = queryset.annotate(
-            sum_stock=Sum('productstock__stock')
-        )
         return queryset
-
-    @admin.display(description=_('Sum of stock'))
-    def sum_stock(self, obj):
-        return obj.sum_stock
-
-
-@admin.register(MinimumProductStock)
-class MinimumProductStockAdmin(ListActionModelAdmin):
-    pass
-    list_display = ('__str__', 'display_tags')
-    list_filter = [('tags', TagFilter), 'location']
-    autocomplete_fields = ['product', 'location', 'tags']
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        queryset = queryset.prefetch_related('tags')
-        return queryset
-
-    @admin.display(description='Tags')
-    def display_tags(self, obj):
-        tags = obj.tags.all()
-        return format_html(' '.join(format_tag(tag) for tag in tags))

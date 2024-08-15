@@ -3,10 +3,10 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
-from inventory.models import MinimumProductStock, ProductStock
+from inventory.models import ProductStock, ProductWithStock
 from master.admin import format_tag, TagFilter
 from shopping.models import List, Item
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 
@@ -38,42 +38,32 @@ class ListAdminForm(forms.ModelForm):
         fields = ['name', 'tags', 'products_under_stock']
 
 
-def find_items_under_stock(obj):
-    product_stocks = (ProductStock.objects.values('product')
-                      .annotate(total_stock=Sum('stock')))
+def find_items_under_stock(shoppinglist: List) -> list:
+    existing_item_dict = {}
 
-    minimum_product_stocks = (MinimumProductStock.objects
-                              .select_related('product')
-                              .annotate(total_minimum_stock=Sum('minimum_stock'))
-                              .all())
+    for existing_item in Item.objects.values('id', 'product_id', 'list_id', 'quantity').all():
+        if existing_item_dict.get(existing_item['product_id']):
+            existing_item_dict.get(existing_item['product_id'])['quantity'] += existing_item['quantity']
+        else:
+            existing_item_dict[existing_item['product_id']] = existing_item
 
-    product_stock_dict = {ps['product']: ps['total_stock'] for ps in product_stocks}
-    existing_item_dict = {item.product.pk: item for item in Item.objects.all()}
+    products = ProductWithStock.default_manager.all()
+    for product in products:
+        item = Item(
+            product=product,
+            name=product.name,
+            quantity=product.stock_needed,
+            list=shoppinglist
+        )
 
-    for mps in minimum_product_stocks:
-        current_stock = product_stock_dict.get(mps.product.pk, 0)
-        stock_needed = mps.minimum_stock - current_stock
-        if stock_needed > 0:
-            existing_item = existing_item_dict.get(mps.product.pk)
-            if existing_item:
-                if existing_item.quantity < stock_needed:
-                    if obj and existing_item.list_id == obj.id:
-                        existing_item.quantity = stock_needed
-                        existing_item.save()
-                    else:
-                        yield Item(
-                            product=mps.product,
-                            name=mps.product.name,
-                            quantity=stock_needed - existing_item.quantity,
-                            list=obj,
-                        )
-            else:
-                yield Item(
-                    product=mps.product,
-                    name=mps.product.name,
-                    quantity=stock_needed,
-                    list=obj,
-                )
+        existing_item = existing_item_dict.get(product.pk)
+        if existing_item:
+            item.quantity -= existing_item['quantity']
+            if existing_item['list_id'] == shoppinglist.id:
+                item.pk = existing_item['id']
+
+        if item.quantity > 0:
+            yield item
 
 
 # Register your models here.
@@ -108,6 +98,8 @@ class ListAdmin(ListActionModelAdmin):
         if len(products_to_add):
             for item in find_items_under_stock(obj):
                 if item.product.id in products_to_add:
+                    if item.pk:
+                        item.quantity += Item.objects.values('quantity').get(pk=item.pk)['quantity']
                     item.save()
 
 
@@ -160,7 +152,7 @@ def move_to_inventory(modeladmin, request, queryset):
 @admin.register(Item)
 class ItemAdmin(ListActionModelAdmin):
     search_fields = ['name']
-    list_display = ['__str__', 'in_cart', 'list', 'display_tags']
+    list_display = ['__str__', 'in_cart', 'display_tags', 'list']
     list_filter = ['in_cart', ('list', admin.RelatedOnlyFieldListFilter), ('tags', TagFilter)]
     actions = [add_to_cart, remove_from_cart, move_to_inventory]
     list_actions = ['add_to_cart', 'remove_from_cart']

@@ -1,4 +1,6 @@
 from django.db import models, transaction
+from django.db.models import OuterRef, Sum, Subquery, Value, F, Max
+from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -48,15 +50,6 @@ class ProductStock(models.Model):
         super(ProductStock, self).save(*args, **kwargs)
 
 
-class ProductWithStock(Product):
-    pass
-
-    class Meta:
-        verbose_name = _("Product with stock")
-        verbose_name_plural = _("Products with stock")
-        proxy = True
-
-
 class MinimumProductStock(models.Model):
     pass
     product = models.ForeignKey(Product, on_delete=models.RESTRICT, verbose_name=_('Product'))
@@ -70,6 +63,44 @@ class MinimumProductStock(models.Model):
     class Meta:
         verbose_name = _("Minimum Product Stock")
         verbose_name_plural = _("Minimum Product Stocks")
+
+
+class ProductStockManager(models.Manager):
+    def get_queryset(self):
+        stock_subquery = ProductStock.objects.filter(
+            product_id=OuterRef('id')
+        ).values('product_id').annotate(
+            total_stock=Sum('stock')
+        ).values('total_stock')
+
+        minimum_stock_subquery = MinimumProductStock.objects.filter(
+            product_id=OuterRef('id')
+        ).values('product_id').annotate(
+            total_minimum_stock=Sum('minimum_stock')
+        ).values('total_minimum_stock')
+
+        queryset = super().get_queryset()
+        queryset = queryset.annotate(
+            stock=Coalesce(Subquery(stock_subquery), Value(0)),
+            minimum_stock=Coalesce(Subquery(minimum_stock_subquery), Value(0))
+        )
+
+        queryset = queryset.annotate(
+            stock_needed=Max(F('minimum_stock') - F('stock'), Value(0))
+        )
+
+        return queryset
+
+
+class ProductWithStock(Product):
+    pass
+
+    default_manager = ProductStockManager()
+
+    class Meta:
+        verbose_name = _("Product with stock")
+        verbose_name_plural = _("Products with stock")
+        proxy = True
 
 
 @receiver(post_save, sender=MinimumProductStock)
