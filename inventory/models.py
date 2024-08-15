@@ -81,14 +81,14 @@ class ProductStockManager(models.Manager):
 
         queryset = super().get_queryset()
         queryset = queryset.annotate(
-            stock=Coalesce(Subquery(stock_subquery), Value(0,  output_field=IntegerField())),
-            minimum_stock=Coalesce(Subquery(minimum_stock_subquery), Value(0,  output_field=IntegerField()))
+            stock=Coalesce(Subquery(stock_subquery, output_field=IntegerField()), Value(0,  output_field=IntegerField())),
+            minimum_stock=Coalesce(Subquery(minimum_stock_subquery, output_field=IntegerField()), Value(0,  output_field=IntegerField()))
         )
 
         queryset = queryset.annotate(
             stock_needed=Max(F('minimum_stock') - F('stock'), Value(0, output_field=IntegerField()))
         )
-
+        print(queryset.query)
         return queryset
 
 
