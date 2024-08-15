@@ -1,5 +1,5 @@
 from django.db import models, transaction
-from django.db.models import OuterRef, Sum, Subquery, Value, F, Max
+from django.db.models import OuterRef, Sum, Subquery, Value, F, Max, IntegerField
 from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -81,12 +81,12 @@ class ProductStockManager(models.Manager):
 
         queryset = super().get_queryset()
         queryset = queryset.annotate(
-            stock=Coalesce(Subquery(stock_subquery), Value(0)),
-            minimum_stock=Coalesce(Subquery(minimum_stock_subquery), Value(0))
+            stock=Coalesce(Subquery(stock_subquery), Value(0,  output_field=IntegerField())),
+            minimum_stock=Coalesce(Subquery(minimum_stock_subquery), Value(0,  output_field=IntegerField()))
         )
 
         queryset = queryset.annotate(
-            stock_needed=Max(F('minimum_stock') - F('stock'), Value(0))
+            stock_needed=Max(F('minimum_stock') - F('stock'), Value(0, output_field=IntegerField()))
         )
 
         return queryset
