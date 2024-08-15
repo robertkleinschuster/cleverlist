@@ -71,13 +71,13 @@ class ProductStockManager(models.Manager):
             product_id=OuterRef('id')
         ).values('product_id').annotate(
             total_stock=Sum('stock')
-        ).values('total_stock')
+        ).values('total_stock')[:1]
 
         minimum_stock_subquery = MinimumProductStock.objects.filter(
             product_id=OuterRef('id')
         ).values('product_id').annotate(
             total_minimum_stock=Sum('minimum_stock')
-        ).values('total_minimum_stock')
+        ).values('total_minimum_stock')[:1]
 
         queryset = super().get_queryset()
         queryset = queryset.annotate(
@@ -91,7 +91,7 @@ class ProductStockManager(models.Manager):
                 Value(0, output_field=IntegerField())
             )
         )
-
+        print(queryset.query)
         return queryset
 
 
