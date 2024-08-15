@@ -9,6 +9,35 @@ from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 from master.admin import format_tag, TagFilter
+from shopping.models import Item
+
+
+@admin.action(description=_('Add Shopping Item'))
+def add_shopping_item(modeladmin, request, queryset):
+    existing_item_dict = {}
+
+    for existing_item in Item.objects.values('id', 'product_id', 'list_id', 'quantity').all():
+        if existing_item_dict.get(existing_item['product_id']):
+            existing_item_dict.get(existing_item['product_id'])['total_quantity'] += existing_item['quantity']
+        else:
+            existing_item_dict[existing_item['product_id']] = existing_item
+            existing_item_dict[existing_item['product_id']]['total_quantity'] = existing_item['quantity']
+
+    for product in queryset.all():
+        item = Item(
+            product=product,
+            name=product.name,
+            quantity=product.stock_needed
+        )
+
+        existing_item = existing_item_dict.get(product.pk)
+        if existing_item:
+            item.quantity -= existing_item['total_quantity']
+            item.quantity += existing_item['quantity']
+            item.pk = existing_item['id']
+
+        if item.quantity > 0:
+            item.save()
 
 
 class ProductStockInline(admin.StackedInline):
@@ -73,6 +102,8 @@ class ProductWithStockAdmin(ListActionModelAdmin):
     search_fields = ['name']
     exclude = ['name', 'tags']
     list_filter = [('productstock__tags', TagFilter)]
+    actions = [add_shopping_item]
+    list_actions = ['add_shopping_item']
 
     def has_change_permission(self, request, obj=None):
         return True
