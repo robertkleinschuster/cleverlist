@@ -8,6 +8,7 @@
     color: #000;
     font-size: 12px;
     border: 1px solid #00000055;
+    white-space: nowrap;
 }
 
 #changelist-filter .tag:before {
