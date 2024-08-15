@@ -86,9 +86,12 @@ class ProductStockManager(models.Manager):
         )
 
         queryset = queryset.annotate(
-            stock_needed=Max(F('minimum_stock') - F('stock'), Value(0, output_field=IntegerField()))
+            stock_needed=Max(
+                Coalesce(F('minimum_stock') - F('stock'), Value(0, output_field=IntegerField())),
+                Value(0, output_field=IntegerField())
+            )
         )
-        print(queryset.query)
+
         return queryset
 
 
