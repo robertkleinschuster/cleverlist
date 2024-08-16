@@ -27,7 +27,8 @@ class FSStorage:
 
     def delete(self, resource):
         filename = os.path.join(self.home, str(resource.user.pk), str(resource.uuid))
-        os.remove(filename)
+        if os.path.exists(filename):
+            os.remove(filename)
 
     def retrieve(self, resource):
 
