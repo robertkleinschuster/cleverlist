@@ -18,11 +18,11 @@ current_user_principals = []
 user_regexp = compile(r"/(?P<user>\w+)/$")
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
 class WebDAV(View):
-
     http_method_names = ['get', 'put', 'propfind', 'delete',
                          'head', 'options', 'mkcol', 'proppatch', 'copy', 'move']
 
@@ -107,9 +107,7 @@ class WebDAV(View):
             return HttpResponseForbidden()
 
         response = StreamingHttpResponse(
-            self.storage.retrieve(
-                self, request, resource
-            ),
+            self.storage.retrieve(resource),
             content_type=resource.content_type
         )
 
@@ -272,7 +270,7 @@ class WebDAV(View):
         )
         resource.size = request.META['CONTENT_LENGTH']
         resource.save()
-        self.storage.store(self, request, resource)
+        self.storage.store(request, resource)
         return webdav.created(request)
 
     def mkcol(self, request, user, resource_name):
@@ -299,7 +297,7 @@ class WebDAV(View):
             scheme = request.META['wsgi.url_scheme']
 
         multistatus_response_href.text = scheme + \
-            '://' + request.META['HTTP_HOST'] + href
+                                         '://' + request.META['HTTP_HOST'] + href
         multistatus_response.append(multistatus_response_href)
 
         for prop in response_props:
@@ -320,7 +318,7 @@ class WebDAV(View):
             propstat.append(prop_element)
             propstat_status = etree.Element('{DAV:}status')
             propstat_status.text = request.META[
-                'SERVER_PROTOCOL'] + ' ' + status
+                                       'SERVER_PROTOCOL'] + ' ' + status
             propstat.append(propstat_status)
 
         return multistatus_response
@@ -341,7 +339,7 @@ class WebDAV(View):
             propstat.append(prop_element)
             propstat_status = etree.Element('{DAV:}status')
             propstat_status.text = request.META[
-                'SERVER_PROTOCOL'] + ' ' + status
+                                       'SERVER_PROTOCOL'] + ' ' + status
             propstat.append(propstat_status)
 
         return multistatus_response
@@ -592,7 +590,7 @@ def prop_dav_acl(dav, request, resource):
     ace = webdav.xml_node('{DAV:}ace')
     ace_principal = webdav.xml_node('{DAV:}principal')
     ace_principal.append(webdav.xml_node('{DAV:}all'))
-    #principals = prop_dav_current_user_principal(dav, request, resource)
+    # principals = prop_dav_current_user_principal(dav, request, resource)
     # for principal in principals:
     #    ace_principal.append(principal)
     ace.append(ace_principal)
@@ -606,6 +604,7 @@ def prop_dav_acl(dav, request, resource):
 
 def prop_dav_owner(dav, request, resource):
     return prop_dav_current_user_principal(dav, request, resource)
+
 
 webdav.register_prop(
     '{DAV:}resourcetype',
