@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     "master.apps.MasterConfig",
     "shopping.apps.ShoppingConfig",
     "inventory.apps.InventoryConfig",
-    "todo.apps.TodoConfig"
+    "todo.apps.TodoConfig",
+    "webdav.apps.WebDAVConfig",
 ]
 
 MIDDLEWARE = [
@@ -82,6 +83,10 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'cleverlist.wsgi.application'
 
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -108,7 +113,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -160,10 +164,12 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+STORAGE_PATH = os.environ.get('DJANGO_STORAGE_PATH', BASE_DIR / "data")
+WEBDAV_STORAGE_PATH = STORAGE_PATH / "webdav"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+WEBDAV_CURRENT_USER_PRINCIPAL_BASE = '/principals'
+WEBDAV_ADDRESSBOOK_HOME_SET_BASE = '/addressbook'
+WEBDAV_CALENDAR_HOME_SET_BASE = '/calendars'
 
 LOGGING = {
     'version': 1,

@@ -91,7 +91,7 @@ class ProductStockManager(models.Manager):
                 Value(0, output_field=IntegerField())
             )
         )
-        print(queryset.query)
+
         return queryset
 
 

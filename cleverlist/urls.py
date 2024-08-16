@@ -15,8 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
+
+from webdav.base import WebDAV
+from webdav.addressbook import CardDAV
+from webdav.calendar import CalDAV
+from webdav.wellknown import WellKnownDAV
 
 urlpatterns = [
+    re_path(r'^principals/(\w+)/(.*)', WebDAV.as_view(root='storage')),
+    re_path(r'^storage/(\w+)/(.*)', WebDAV.as_view(root='storage')),
+    re_path(r'^addressbook/(\w+)/(.*)', CardDAV.as_view(root='addressbook001')),
+    re_path(r'^calendars/(\w+)/(.*)', CalDAV.as_view(root='calendars')),
+    re_path(r'^.well[-_]?known/caldav/?$',
+        WellKnownDAV.as_view(root='calendars')),
+    re_path(r'^.well[-_]?known/carddav/?$',
+        WellKnownDAV.as_view(root='addressbook001')),
+
     path('', admin.site.urls),
 ]
