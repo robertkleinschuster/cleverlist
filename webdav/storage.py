@@ -25,6 +25,10 @@ class FSStorage:
         except IOError as e:
             raise e
 
+    def delete(self, resource):
+        filename = os.path.join(self.home, str(resource.user.pk), str(resource.uuid))
+        os.remove(filename)
+
     def retrieve(self, resource):
 
         class FSIterable:

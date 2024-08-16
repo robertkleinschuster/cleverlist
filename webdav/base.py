@@ -131,6 +131,8 @@ class WebDAV(View):
         if resource.collection and depth != 'infinity':
             if resource.resource_set.count() > 0:
                 return HttpResponseForbidden()
+
+        self.storage.delete(resource)
         resource.delete()
         return HttpResponse(status=204)
 
