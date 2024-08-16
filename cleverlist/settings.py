@@ -13,11 +13,11 @@ import os
 import django
 from pathlib import Path
 from dotenv import load_dotenv
+
 load_dotenv()  # loads the configs from .env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -132,7 +132,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -153,7 +152,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
@@ -165,7 +163,7 @@ STATICFILES_DIRS = [
 ]
 
 STORAGE_PATH = os.environ.get('DJANGO_STORAGE_PATH', BASE_DIR / "data")
-WEBDAV_STORAGE_PATH = STORAGE_PATH / "webdav"
+WEBDAV_STORAGE_PATH = os.path.join(STORAGE_PATH, 'webdav')
 
 WEBDAV_CURRENT_USER_PRINCIPAL_BASE = '/principals'
 WEBDAV_ADDRESSBOOK_HOME_SET_BASE = '/addressbook'
