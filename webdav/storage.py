@@ -8,6 +8,17 @@ class FSStorage:
     def __init__(self, home=None):
         self.home = home or settings.WEBDAV_STORAGE_PATH
 
+    def store_string(self, content, resource):
+        directory = os.path.join(self.home, str(resource.user.pk))
+        os.makedirs(directory, exist_ok=True)  # Ensure directory exists
+
+        filename = os.path.join(directory, str(resource.uuid))
+        try:
+            with open(filename, 'wb') as f:  # Open in binary mode
+                f.write(content)
+        except IOError as e:
+            raise e
+
     def store(self, request, resource):
         directory = os.path.join(self.home, str(resource.user.pk))
         os.makedirs(directory, exist_ok=True)  # Ensure directory exists
