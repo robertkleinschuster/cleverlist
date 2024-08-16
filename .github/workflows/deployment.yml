@@ -65,6 +65,7 @@ jobs:
           echo DJANGO_STATIC_ROOT="${{ secrets.STATIC_ROOT }}" >> .env
           echo DJANGO_DB_MY_CNF="${{ secrets.DB_MY_CNF }}" >> .env
           echo DJANGO_DB_NAME="${{ secrets.DB_NAME }}" >> .env
+          echo DJANGO_STORAGE_PATH="${{ secrets.STORAGE_PATH }}" >> .env
 
       - name: Upload
         uses: appleboy/scp-action@v0.1.7
