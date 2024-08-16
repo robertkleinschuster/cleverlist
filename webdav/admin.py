@@ -13,5 +13,6 @@ class ResourceAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'displayname', 'user')
     inlines = [PropInline]
 
+    filter_horizontal = ['groups']
 
 admin.site.register(Prop)
