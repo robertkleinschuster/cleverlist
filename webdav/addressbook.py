@@ -37,7 +37,7 @@ class CardDAV(WebDAV):
             multistatus_response_propstat_prop)
 
         multistatus_response_propstat_prop_address_data = webdav.xml_node(
-            '{urn:ietf:params:xml:ns:carddav}address-data', ''.join(self.storage.retrieve(resource)))
+            '{urn:ietf:params:xml:ns:carddav}address-data', ''.join(self.storage.retrieve_string(resource)))
         multistatus_response_propstat_prop.append(
             multistatus_response_propstat_prop_address_data)
         # contenttype

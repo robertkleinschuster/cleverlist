@@ -87,7 +87,7 @@ class CalDAV(WebDAV):
             multistatus_response_propstat_prop)
         if not resource.collection:
             multistatus_response_propstat_prop_calendar_data = webdav.xml_node(
-                '{urn:ietf:params:xml:ns:caldav}calendar-data', ''.join(self.storage.retrieve(resource)))
+                '{urn:ietf:params:xml:ns:caldav}calendar-data', ''.join(self.storage.retrieve_string(resource)))
             multistatus_response_propstat_prop.append(
                 multistatus_response_propstat_prop_calendar_data)
             multistatus_response_propstat_prop_get_contenttype = webdav.xml_node(
