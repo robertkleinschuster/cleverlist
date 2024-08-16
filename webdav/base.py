@@ -22,6 +22,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _check_group_sharing(user, username):
+    try:
+        sharing_user = User.objects.get(username=username)
+        return sharing_user.groups.all() & user.groups.all()
+    except ObjectDoesNotExist:
+        return None
+
+
 class WebDAV(View):
     http_method_names = ['get', 'put', 'propfind', 'delete',
                          'head', 'options', 'mkcol', 'proppatch', 'copy', 'move']
@@ -52,13 +60,6 @@ class WebDAV(View):
                 if auth[0].lower() == "basic":
                     uname, passwd = base64.b64decode(auth[1]).decode('utf-8').split(':')
                     user = authenticate(username=uname, password=passwd)
-
-        def _check_group_sharing(user, sharing_user):
-            try:
-                sharing_user = User.objects.get(username=username)
-                return sharing_user.groups.all() & user.groups.all()
-            except ObjectDoesNotExist:
-                return None
 
         if (user and user.is_active) and (
                 user.username == username or _check_group_sharing(user, username)):
