@@ -68,7 +68,7 @@ class Resource(models.Model):
 
             if len(value):
                 prop.value = '\n'.join(
-                    [etree.tostring(children, pretty_print=True)
+                    [etree.tostring(children, pretty_print=True).decode('utf-8)')
                      for children
                      in value]
                 )
