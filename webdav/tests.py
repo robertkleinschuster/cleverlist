@@ -1,6 +1,8 @@
+from django.http import HttpResponse
 from django.test import TestCase
 
 from django.test import RequestFactory
+
 from webdav.base import WebDAV
 
 from django.test.utils import override_settings
@@ -9,7 +11,10 @@ import base64
 from django.contrib.sessions.middleware import SessionMiddleware
 import os.path
 
+
 # Create your tests here.
+def get_response(request):
+    return HttpResponse()
 
 
 @override_settings(WEBDAV_STORAGE_PATH='/tmp')
@@ -21,8 +26,8 @@ class WebDAVTestCase(TestCase):
         self.user = User.objects.create_user(
             self.username, 'test@test', self.username)
         self.auth = 'Basic ' + \
-            base64.b64encode('{}:{}'.format(self.username, self.username))
-        self.middleware = SessionMiddleware()
+                    base64.b64encode('{}:{}'.format(self.username, self.username).encode('utf-8')).decode('utf-8')
+        self.middleware = SessionMiddleware(get_response)
         self.factory = RequestFactory()
         self.base = '/principal/' + self.username
 
@@ -43,7 +48,7 @@ class WebDAVTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'text/plain')
         self.assertEqual(
-            ''.join(response.streaming_content), open('/etc/services').read())
+            ''.join(chunk.decode('utf-8') for chunk in response.streaming_content), open('/etc/services').read())
 
     def test_mkcol(self, resource_name='coll'):
         uri = os.path.join(self.base, resource_name)
@@ -75,7 +80,7 @@ class WebDAVTestCase(TestCase):
                                        )
         self.middleware.process_request(request)
         response = self.view(request, self.username, 'coll3')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
 
     def test_delete_resource(self, resource_name='deleteme'):
         self.test_putandget(resource_name)
@@ -85,4 +90,4 @@ class WebDAVTestCase(TestCase):
                                        )
         self.middleware.process_request(request)
         response = self.view(request, self.username, resource_name)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)

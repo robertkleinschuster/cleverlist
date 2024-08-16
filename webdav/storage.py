@@ -13,11 +13,11 @@ class FSStorage(object):
         directory = os.path.join(self.home, str(resource.user.pk))
         if not os.path.exists(directory):
             os.mkdir(directory)
-        filename = os.path.join(directory, resource.uuid)
+        filename = os.path.join(directory, str(resource.uuid))
         f = open(filename, 'w')
         cl = int(resource.size)
         while cl > 0:
-            chunk = request.read(min(cl, chunk_size))
+            chunk = request.read(min(cl, chunk_size)).decode('utf-8')
             if len(chunk) == 0:
                 break
             f.write(chunk)
@@ -43,5 +43,5 @@ class FSStorage(object):
                 return chunk
             __next__ = next
         filename = os.path.join(
-            self.home, str(resource.user.pk), resource.uuid)
+            self.home, str(resource.user.pk), str(resource.uuid))
         return FSIterable(filename, resource.size, chunk_size)
