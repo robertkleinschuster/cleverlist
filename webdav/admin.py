@@ -1,27 +1,17 @@
 from django.contrib import admin
 from webdav.models import *
-from django import forms
 
 
 class PropInline(admin.TabularInline):
-	fields = ['resource', 'name', 'value']
-	model = Prop
+    fields = ['resource', 'name', 'value']
+    extra = 0
+    model = Prop
 
 
-class ResourceAdminForm(forms.ModelForm):
-
-	class Meta:
-		model = Resource
-		exclude = []
-		widgets = {
-			'file': forms.TextInput(attrs={'size': '64'})
-		}
-
-
+@admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
-	list_display = ('__str__', 'displayname', 'user')
-	form = ResourceAdminForm
-	inlines = [PropInline]
+    list_display = ('__str__', 'displayname', 'user')
+    inlines = [PropInline]
 
 
 admin.site.register(Resource, ResourceAdmin)
