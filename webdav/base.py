@@ -372,11 +372,11 @@ class WebDAV(View):
         doc.append(multistatus_response)
 
         if depth == '1':
-            resources = Resource.objects.filter(parent=resource)
+            resources = Resource.objects.prefetch_related('prop_set').filter(parent=resource)
 
             if shared:  # we skip it if unnecessary
                 # add shared resources from groups
-                shared_resources = Resource.objects.filter(
+                shared_resources = Resource.objects.prefetch_related('prop_set').filter(
                     groups__in=request.user.groups.all()
                 )
 
@@ -462,7 +462,7 @@ class WebDAV(View):
 
     def _get_root(self, user):
         try:
-            resource = Resource.objects.get(
+            resource = Resource.objects.prefetch_related('prop_set').get(
                 name=self.root, user=user, parent=None, collection=True)
         except:
             resource = Resource.objects.create(
@@ -485,7 +485,7 @@ class WebDAV(View):
         # returns root in case of '/'
         for part in parts[:-1]:
             try:
-                resource_part = Resource.objects.get(
+                resource_part = Resource.objects.prefetch_related('prop_set').get(
                     user=resource_user, parent=parent, name=part
                 )
                 if not resource_part.collection:
@@ -496,7 +496,7 @@ class WebDAV(View):
 
         # now check for the requested item
         try:
-            resource = Resource.objects.get(
+            resource = Resource.objects.prefetch_related('prop_set').get(
                 user=resource_user, parent=parent, name=parts[-1]
             )
             if strict and create:

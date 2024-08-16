@@ -14,5 +14,4 @@ class ResourceAdmin(admin.ModelAdmin):
     inlines = [PropInline]
 
 
-admin.site.register(Resource, ResourceAdmin)
 admin.site.register(Prop)

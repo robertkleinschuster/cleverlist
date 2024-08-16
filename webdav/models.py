@@ -11,9 +11,9 @@ class Resource(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     groups = models.ManyToManyField(Group, blank=True)
     parent = models.ForeignKey('Resource', on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=255)
-    collection = models.BooleanField(default=False)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, db_index=True)
+    collection = models.BooleanField(default=False, db_index=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
     content_type = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -116,7 +116,7 @@ class Resource(models.Model):
 
 class Prop(models.Model):
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     value = models.TextField(blank=True, null=True)
     is_xml = models.BooleanField(default=False)
 
