@@ -379,7 +379,7 @@ class WebDAV(View):
             if shared:  # we skip it if unnecessary
                 # add shared resources from groups
                 shared_resources = Resource.objects.filter(
-                    groups=request.user.groups.all()
+                    groups__in=request.user.groups.all()
                 )
 
                 # consider only shared resources having the same progenitor
