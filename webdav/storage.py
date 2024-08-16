@@ -55,3 +55,7 @@ class FSStorage:
 
     def retrieve_string(self, resource):
         return ''.join(chunk.decode('utf-8') for chunk in self.retrieve(resource))
+
+    def exists(self, resource):
+        filename = os.path.join(self.home, str(resource.user.pk), str(resource.uuid))
+        return os.path.exists(filename)
