@@ -271,7 +271,7 @@ class WebDAV(View):
         resource.content_type = request.META.get(
             'CONTENT_TYPE', 'application/octet-stream'
         )
-        resource.size = request.META['CONTENT_LENGTH']
+        resource.size = int(request.META['CONTENT_LENGTH'])
         resource.save()
         self.storage.store(request, resource)
         if resource.task_id:
