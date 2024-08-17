@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
@@ -9,13 +10,17 @@ from todo.models import Task, PendingTask
 
 
 @admin.action(description=_("Mark task as done"))
-def mark_done(modeladmin, request, queryset):
-    queryset.update(done=timezone.now())
+def mark_done(modeladmin, request, queryset: QuerySet):
+    task = queryset.get()
+    task.done = timezone.now()
+    task.save()
 
 
 @admin.action(description=_("Mark task as pending"))
 def mark_pending(modeladmin, request, queryset):
-    queryset.update(done=None)
+    task = queryset.get()
+    task.done = None
+    task.save()
 
 
 # Register your models here.

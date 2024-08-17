@@ -3,6 +3,8 @@ from django.views.generic.base import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from icalendar import Todo
+
 import webdav
 from lxml import etree
 from django.utils.http import http_date
@@ -13,11 +15,9 @@ from django.conf import settings
 from .storage import FSStorage
 from re import sub, compile
 from django.core.exceptions import ObjectDoesNotExist
-
-current_user_principals = []
-user_regexp = compile(r"/(?P<user>\w+)/$")
-
 import logging
+
+user_regexp = compile(r"/(?P<user>\w+)/$")
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +238,7 @@ class WebDAV(View):
         # copy properties
         for prop in resource.prop_set.all():
             prop.pk = None
-            prop.parent = resource2
+            prop.resource = resource2
             prop.save()
 
         return result
@@ -274,6 +274,13 @@ class WebDAV(View):
         resource.size = request.META['CONTENT_LENGTH']
         resource.save()
         self.storage.store(request, resource)
+        if resource.task_id:
+            task = resource.task
+            todo = Todo.from_ical(self.storage.retrieve_string(resource))
+            task.done = todo.get('completed')
+            task.name = todo.get('summary')
+            task.deadline = todo.get('due')
+            task.save()
         return webdav.created(request)
 
     def mkcol(self, request, user, resource_name):
@@ -507,8 +514,10 @@ class WebDAV(View):
         except Resource.DoesNotExist:
             if create:
                 resource = Resource.objects.create(
-                    user=resource_user, parent=parent, name=parts[
-                        -1], collection=collection
+                    user=resource_user,
+                    parent=parent,
+                    name=parts[-1],
+                    collection=collection
                 )
             else:
                 raise webdav.exceptions.NotFound()

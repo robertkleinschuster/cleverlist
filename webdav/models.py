@@ -1,9 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-import uuid
+from django.utils import timezone
 import webdav
 import webdav.exceptions
 from lxml import etree
+
+from todo.models import Task
+import uuid
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+from icalendar import Todo, vDatetime, vText
+from webdav.storage import FSStorage
 
 
 # Create your models here.
@@ -11,6 +18,7 @@ class Resource(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     groups = models.ManyToManyField(Group, blank=True)
     parent = models.ForeignKey('Resource', on_delete=models.CASCADE, null=True, blank=True)
+    task = models.OneToOneField(Task, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255, db_index=True)
     collection = models.BooleanField(default=False, db_index=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
@@ -125,3 +133,72 @@ class Prop(models.Model):
 
     class Meta:
         unique_together = ('resource', 'name')
+
+
+@receiver(pre_delete, sender=Resource)
+def delete_file(sender, instance: Resource, **kwargs):
+    storage = FSStorage()
+    storage.delete(instance)
+
+
+@receiver(post_save, sender=Task)
+def save_caldav(sender, instance: Task, created, **kwargs):
+    storage = FSStorage()
+    if Resource.objects.filter(task=instance).exists():
+        resource = Resource.objects.get(task=instance)
+        todo = Todo.from_ical(storage.retrieve_string(resource))
+        todo['summary'] = vText(instance.name)
+        todo['last-modified'] = vDatetime(timezone.now())
+
+        if instance.deadline:
+            todo['due'] = vDatetime(instance.deadline)
+        else:
+            if todo.get('due'):
+                del todo['due']
+        if instance.done:
+            todo['completed'] = vDatetime(instance.done)
+            todo['status'] = 'COMPLETED'
+        else:
+            if todo.get('completed'):
+                del todo['completed']
+            todo['status'] = 'NEEDS-ACTION'
+
+        ics = todo.to_ical()
+        resource.size = len(ics)
+        resource.save()
+        storage.store_string(ics, resource)
+        return
+
+    if Resource.objects.filter(name="tasks").exists():
+        parent = Resource.objects.get(name="tasks")
+        uid = uuid.uuid4()
+
+        todo = Todo()
+        todo['uid'] = uid
+        todo['CALSCALE'] = 'GREGORIAN'
+        todo['created'] = vDatetime(timezone.now())
+        todo['summary'] = vText(instance.name)
+        todo['last-modified'] = vDatetime(timezone.now())
+
+        if instance.deadline:
+            todo['due'] = vDatetime(instance.deadline)
+
+        if instance.done:
+            todo['completed'] = vDatetime(instance.done)
+            todo['status'] = 'COMPLETED'
+        else:
+            todo['status'] = 'NEEDS-ACTION'
+
+        ics = todo.to_ical()
+
+        resource = Resource.objects.create(
+            name=f'{uid}.ics',
+            uuid=uid,
+            parent=parent,
+            user_id=parent.user_id,
+            task=instance,
+            content_type='text/calendar; charset=utf-8',
+            size=len(ics),
+        )
+
+        storage.store_string(ics, resource)

@@ -8,17 +8,6 @@ class FSStorage:
     def __init__(self, home=None):
         self.home = home or settings.WEBDAV_STORAGE_PATH
 
-    def store_string(self, content, resource):
-        directory = os.path.join(self.home, str(resource.user.pk))
-        os.makedirs(directory, exist_ok=True)  # Ensure directory exists
-
-        filename = os.path.join(directory, str(resource.uuid))
-        try:
-            with open(filename, 'wb') as f:  # Open in binary mode
-                f.write(content)
-        except IOError as e:
-            raise e
-
     def store(self, request, resource):
         directory = os.path.join(self.home, str(resource.user.pk))
         os.makedirs(directory, exist_ok=True)  # Ensure directory exists
@@ -33,6 +22,17 @@ class FSStorage:
                         break
                     f.write(chunk)
                     cl -= len(chunk)
+        except IOError as e:
+            raise e
+
+    def store_string(self, ical_string: bytes, resource):
+        directory = os.path.join(self.home, str(resource.user.pk))
+        os.makedirs(directory, exist_ok=True)  # Ensure directory exists
+
+        filename = os.path.join(directory, str(resource.uuid))
+        try:
+            with open(filename, 'wb') as f:  # Open in text mode with UTF-8 encoding
+                f.write(ical_string)
         except IOError as e:
             raise e
 

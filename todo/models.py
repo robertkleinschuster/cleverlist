@@ -8,7 +8,7 @@ from shopping.models import List
 # Create your models here.
 class Task(models.Model):
     pass
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=255)
     deadline = models.DateTimeField(null=True, blank=True, verbose_name=_('Deadline'))
     done = models.DateTimeField(null=True, blank=True, editable=False, verbose_name=_('Done'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
