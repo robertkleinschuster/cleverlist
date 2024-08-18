@@ -4,11 +4,11 @@ from webdav.models import Resource
 
 
 def ensure_root(user: User) -> Resource:
-    exists = Resource.objects.exists(
+    exists = Resource.objects.filter(
         user=user,
         name='calendars',
         parent=None
-    )
+    ).exists()
     if exists:
         return Resource.objects.get(
             user=user,
@@ -24,10 +24,10 @@ def ensure_root(user: User) -> Resource:
 
 
 def ensure_calendar(root: Resource, name: str, displayname: str) -> Resource:
-    exists = Resource.objects.exists(
+    exists = Resource.objects.filter(
         parent=root,
         name=name,
-    )
+    ).exists()
     if exists:
         return Resource.objects.get(
             parent=root,
@@ -35,6 +35,7 @@ def ensure_calendar(root: Resource, name: str, displayname: str) -> Resource:
         )
     else:
         resource = Resource.objects.create(
+            user=root.user,
             parent=root,
             name=name,
             collection=True,
