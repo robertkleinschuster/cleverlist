@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import StreamingHttpResponse, HttpResponse, HttpResponseForbidden
 from django.views.generic.base import View
 from django.views.decorators.csrf import csrf_exempt
@@ -65,13 +66,16 @@ class WebDAV(View):
                     user = authenticate(username=uname, password=passwd)
 
         if (user and user.is_active) and (
-                user.username == username or _check_group_sharing(user, username)):
+                user.username == username or username == '-' or _check_group_sharing(user, username)):
             login(request, user)
             request.user = user
             try:
-                root = ensure_root(user)
+
+                root = ensure_root()
                 ensure_calendar(root, 'tasks', 'Aufgaben')
                 ensure_calendar(root, 'shoppingitems', 'Einkaufsartikel')
+                ensure_calendar(root, 'shoppingcart', 'Einkaufswagen')
+                ensure_calendar(root, 'inventory', 'Produktbestand')
 
                 response = super(WebDAV, self).dispatch(
                     request, username, *args, **kwargs
@@ -401,7 +405,7 @@ class WebDAV(View):
             if shared:  # we skip it if unnecessary
                 # add shared resources from groups
                 shared_resources = Resource.objects.prefetch_related('prop_set').filter(
-                    groups__in=request.user.groups.all()
+                   Q(user=None) | Q(groups__in=request.user.groups.all())
                 )
 
                 # consider only shared resources having the same progenitor
@@ -420,7 +424,7 @@ class WebDAV(View):
                     request,
                     sub(
                         r"%s$" % (user),
-                        "%s" % (resource.user),
+                        "%s" % (resource.username),
                         request.path.rstrip("/")
                     ) + "/" + resource.name,
                     resource,
@@ -494,7 +498,10 @@ class WebDAV(View):
         return resource
 
     def get_resource(self, request, user, name, create=False, collection=False, strict=False):
-        resource_user = User.objects.get(username=user)
+        resource_user = None
+        if user != '-':
+            resource_user = User.objects.get(username=user)
+
         # remove final slashes
         name = name.rstrip('/')
         parent = self._get_root(resource_user)
@@ -526,7 +533,7 @@ class WebDAV(View):
             if strict and create:
                 raise webdav.exceptions.AlreadyExists()
         except Resource.DoesNotExist:
-            if create:
+            if create and resource_user is not None:
                 resource = Resource.objects.create(
                     user=resource_user,
                     parent=parent,

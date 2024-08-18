@@ -1,23 +1,25 @@
-from django.contrib.auth.models import User
-
 from webdav.models import Resource
 
 
-def ensure_root(user: User) -> Resource:
+def ensure_root() -> Resource:
     exists = Resource.objects.filter(
-        user=user,
+        user=None,
         name='calendars',
         parent=None
     ).exists()
     if exists:
-        return Resource.objects.get(
-            user=user,
+        resource = Resource.objects.get(
+            user=None,
             name='calendars',
             parent=None
         )
+        if resource.user_id:
+            resource.user = None
+            resource.save()
+        return resource
     else:
         return Resource.objects.create(
-            user=user,
+            user=None,
             name='calendars',
             collection=True
         )
@@ -29,13 +31,17 @@ def ensure_calendar(root: Resource, name: str, displayname: str) -> Resource:
         name=name,
     ).exists()
     if exists:
-        return Resource.objects.get(
+        resource = Resource.objects.get(
             parent=root,
             name=name,
         )
+        if resource.user_id:
+            resource.user = None
+            resource.save()
+        return resource
     else:
         resource = Resource.objects.create(
-            user=root.user,
+            user=None,
             parent=root,
             name=name,
             collection=True,
@@ -80,3 +86,4 @@ END:VTIMEZONE
 END:VCALENDAR
 '''
         )
+        return resource

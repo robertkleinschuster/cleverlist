@@ -105,9 +105,9 @@ def prop_dav_addressbook_home_set(dav, request, resource):
     if current_user_principal is not None:
         if isinstance(current_user_principal, list) or isinstance(current_user_principal, tuple):
             for base in current_user_principal:
-                yield webdav.xml_node('{DAV:}href', base.rstrip('/') + '/' + request.user.username)
+                yield webdav.xml_node('{DAV:}href', base.rstrip('/') + '/' + request.username)
         else:
-            yield webdav.xml_node('{DAV:}href', current_user_principal.rstrip('/') + '/' + request.user.username)
+            yield webdav.xml_node('{DAV:}href', current_user_principal.rstrip('/') + '/' + request.username)
 
 
 def prop_dav_supported_report_set(dav, request, resource):

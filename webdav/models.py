@@ -17,7 +17,7 @@ from webdav.todo import change_todo, TodoData, create_todo
 
 # Create your models here.
 class Resource(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     groups = models.ManyToManyField(Group, blank=True)
     parent = models.ForeignKey('Resource', on_delete=models.CASCADE, null=True, blank=True)
     task = models.OneToOneField(Task, on_delete=models.CASCADE, null=True, blank=True)
@@ -98,6 +98,18 @@ class Resource(models.Model):
             return prop.value
         except:
             return ''
+
+    @property
+    def username(self) -> str:
+        if self.user is None:
+            return '-'
+        return self.user.username
+
+    @property
+    def storage_dir(self) -> str:
+        if self.user is None:
+            return '-'
+        return str(self.user.id)
 
     @property
     def progenitor(self):

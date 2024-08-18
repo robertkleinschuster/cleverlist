@@ -9,7 +9,7 @@ class FSStorage:
         self.home = home or settings.WEBDAV_STORAGE_PATH
 
     def store(self, request, resource):
-        directory = os.path.join(self.home, str(resource.user.pk))
+        directory = os.path.join(self.home, str(resource.storage_dir))
         os.makedirs(directory, exist_ok=True)  # Ensure directory exists
 
         filename = os.path.join(directory, str(resource.uuid))
@@ -26,7 +26,7 @@ class FSStorage:
             raise e
 
     def store_string(self, ical_string: bytes, resource):
-        directory = os.path.join(self.home, str(resource.user.pk))
+        directory = os.path.join(self.home, str(resource.storage_dir))
         os.makedirs(directory, exist_ok=True)  # Ensure directory exists
 
         filename = os.path.join(directory, str(resource.uuid))
@@ -37,7 +37,7 @@ class FSStorage:
             raise e
 
     def delete(self, resource):
-        filename = os.path.join(self.home, str(resource.user.pk), str(resource.uuid))
+        filename = os.path.join(self.home, str(resource.storage_dir), str(resource.uuid))
         if os.path.exists(filename):
             os.remove(filename)
 
@@ -61,12 +61,12 @@ class FSStorage:
                 self.size -= len(chunk)
                 return chunk
 
-        filename = os.path.join(self.home, str(resource.user.pk), str(resource.uuid))
+        filename = os.path.join(self.home, str(resource.storage_dir), str(resource.uuid))
         return FSIterable(filename, int(resource.size), self.chunk_size)
 
     def retrieve_string(self, resource):
         return ''.join(chunk.decode('utf-8') for chunk in self.retrieve(resource))
 
     def exists(self, resource):
-        filename = os.path.join(self.home, str(resource.user.pk), str(resource.uuid))
+        filename = os.path.join(self.home, str(resource.storage_dir), str(resource.uuid))
         return os.path.exists(filename)

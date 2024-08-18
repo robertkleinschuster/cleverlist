@@ -11,7 +11,7 @@ class PropInline(admin.TabularInline):
 
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'displayname', 'user')
+    list_display = ('__str__', 'displayname', 'username')
     readonly_fields = ['uuid', 'file']
     inlines = [PropInline]
 
