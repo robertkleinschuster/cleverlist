@@ -65,7 +65,7 @@ class WebDAV(View):
                     user = authenticate(username=uname, password=passwd)
 
         if (user and user.is_active) and (
-                user.username == username or username == '-' or _check_group_sharing(user, username)):
+                user.username == username or username == 'shared' or _check_group_sharing(user, username)):
             login(request, user)
             request.user = user
             try:
@@ -491,7 +491,7 @@ class WebDAV(View):
 
     def get_resource(self, request, user, name, create=False, collection=False, strict=False):
         resource_user = None
-        if user != '-':
+        if user != 'shared':
             resource_user = User.objects.get(username=user)
 
         # remove final slashes
