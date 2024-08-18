@@ -11,6 +11,8 @@ from webdav.models import Resource
 import base64
 import types
 from django.conf import settings
+
+from .calendars import ensure_root, ensure_calendar
 from .storage import FSStorage
 from re import sub, compile
 from django.core.exceptions import ObjectDoesNotExist
@@ -67,6 +69,10 @@ class WebDAV(View):
             login(request, user)
             request.user = user
             try:
+                root = ensure_root(user)
+                ensure_calendar(root, 'tasks', 'Aufgaben')
+                ensure_calendar(root, 'shoppingitems', 'Einkaufsartikel')
+
                 response = super(WebDAV, self).dispatch(
                     request, username, *args, **kwargs
                 )
