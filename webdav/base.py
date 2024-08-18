@@ -525,7 +525,7 @@ class WebDAV(View):
             if strict and create:
                 raise webdav.exceptions.AlreadyExists()
         except Resource.DoesNotExist:
-            if create and resource_user is not None:
+            if create:
                 resource = Resource.objects.create(
                     user=resource_user,
                     parent=parent,
