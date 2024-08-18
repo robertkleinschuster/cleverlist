@@ -56,7 +56,6 @@ def ensure_calendar(root: Resource, name: str, displayname: str) -> Resource:
         )
         resource.prop_set.create(
             name='{urn:ietf:params:xml:ns:caldav}calendar-timezone',
-            is_xml=True,
             value='''
 BEGIN:VCALENDAR
 VERSION:2.0
