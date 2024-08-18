@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-from django.utils import timezone
 import webdav
 import webdav.exceptions
 from lxml import etree
@@ -9,8 +8,8 @@ from todo.models import Task
 import uuid
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from icalendar import Todo, vDatetime, vText, Calendar
 from webdav.storage import FSStorage
+from webdav.todo import change_todo, TodoData, create_todo
 
 
 # Create your models here.
@@ -146,55 +145,32 @@ def save_caldav(sender, instance: Task, created, **kwargs):
     storage = FSStorage()
     if Resource.objects.filter(task=instance).exists():
         resource = Resource.objects.get(task=instance)
-        calendar = Calendar.from_ical(storage.retrieve_string(resource))
 
-        for component in calendar.walk():
-            if isinstance(component, Todo):
-                todo = component
-                todo['summary'] = vText(instance.name)
-                todo['last-modified'] = vDatetime(timezone.now())
+        ics = change_todo(
+            storage.retrieve_string(resource),
+            TodoData(
+                summary=instance.name,
+                due=instance.deadline,
+                completed=instance.done
+            )
+        )
 
-                if instance.deadline:
-                    todo['due'] = vDatetime(instance.deadline)
-                else:
-                    if todo.get('due'):
-                        del todo['due']
-                if instance.done:
-                    todo['completed'] = vDatetime(instance.done)
-                    todo['status'] = 'COMPLETED'
-                else:
-                    if todo.get('completed'):
-                        del todo['completed']
-                    todo['status'] = 'NEEDS-ACTION'
-
-                ics = todo.to_ical()
-                resource.size = len(ics)
-                resource.save()
-                storage.store_string(ics, resource)
-                return
+        resource.size = len(ics)
+        resource.save()
+        storage.store_string(ics, resource)
+        return
 
     if Resource.objects.filter(name="tasks").exists():
         parent = Resource.objects.get(name="tasks")
-        uid = uuid.uuid4()
-
-        todo = Todo()
-        todo['uid'] = uid
-        todo['created'] = vDatetime(timezone.now())
-        todo['summary'] = vText(instance.name)
-        todo['last-modified'] = vDatetime(timezone.now())
-
-        if instance.deadline:
-            todo['due'] = vDatetime(instance.deadline)
-
-        if instance.done:
-            todo['completed'] = vDatetime(instance.done)
-            todo['status'] = 'COMPLETED'
-        else:
-            todo['status'] = 'NEEDS-ACTION'
-
-        calendar = Calendar()
-        calendar.add_component(todo)
-        ics = calendar.to_ical()
+        uid = str(uuid.uuid4())
+        ics = create_todo(
+            uid,
+            TodoData(
+                summary=instance.name,
+                due=instance.deadline,
+                completed=instance.done
+            )
+        )
 
         resource = Resource.objects.create(
             name=f'{uid}.ics',

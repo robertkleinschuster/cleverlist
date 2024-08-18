@@ -3,7 +3,6 @@ from django.views.generic.base import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from icalendar import Todo, Calendar
 
 import webdav
 from lxml import etree
@@ -16,6 +15,8 @@ from .storage import FSStorage
 from re import sub, compile
 from django.core.exceptions import ObjectDoesNotExist
 import logging
+
+from .todo import parse_todo
 
 user_regexp = compile(r"/(?P<user>\w+)/$")
 
@@ -276,23 +277,11 @@ class WebDAV(View):
         self.storage.store(request, resource)
         if resource.task_id:
             task = resource.task
-            todo = None
-            calendar = Calendar.from_ical(self.storage.retrieve_string(resource))
-            for component in calendar.walk():
-                if isinstance(component, Todo):
-                    todo = component
-                    break
-            if todo:
-                task.name = str(todo.get('summary'))
-                completed = None
-                if todo.get('completed'):
-                    completed = todo.get('completed').dt
-                task.done = completed
-                due = None
-                if todo.get('due'):
-                    due = todo.get('due').dt
-                task.deadline = due
-                task.save()
+            todo = parse_todo(self.storage.retrieve_string(resource))
+            task.name = todo.summary
+            task.deadline = todo.due
+            task.done = todo.completed
+            task.save()
         return webdav.created(request)
 
     def mkcol(self, request, user, resource_name):
