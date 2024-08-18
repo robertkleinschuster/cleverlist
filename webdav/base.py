@@ -13,7 +13,6 @@ import base64
 import types
 from django.conf import settings
 
-from .calendars import ensure_root, ensure_calendar
 from .storage import FSStorage
 from re import sub, compile
 from django.core.exceptions import ObjectDoesNotExist
@@ -70,13 +69,6 @@ class WebDAV(View):
             login(request, user)
             request.user = user
             try:
-
-                root = ensure_root()
-                ensure_calendar(root, 'tasks', 'Aufgaben')
-                ensure_calendar(root, 'shoppingitems', 'Einkaufsartikel')
-                ensure_calendar(root, 'shoppingcart', 'Einkaufswagen')
-                ensure_calendar(root, 'inventory', 'Produktbestand')
-
                 response = super(WebDAV, self).dispatch(
                     request, username, *args, **kwargs
                 )
@@ -516,7 +508,7 @@ class WebDAV(View):
         # returns root in case of '/'
         for part in parts[:-1]:
             try:
-                resource_part = Resource.objects.prefetch_related('prop_set').get(
+                resource_part = Resource.objects.get(
                     user=resource_user, parent=parent, name=part
                 )
                 if not resource_part.collection:

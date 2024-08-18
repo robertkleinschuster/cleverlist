@@ -5,6 +5,9 @@ from django.conf import settings
 from lxml import etree
 
 import logging
+
+from webdav.calendars import ensure_root, ensure_calendar
+
 logger = logging.getLogger(__name__)
 
 
@@ -207,3 +210,9 @@ webdav.register_prop(
     '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
     prop_dav_calendar_user_address_set,
     webdav.exceptions.Forbidden)
+
+root = ensure_root()
+ensure_calendar(root, 'tasks', 'Aufgaben')
+ensure_calendar(root, 'shoppingitems', 'Einkaufsartikel')
+ensure_calendar(root, 'shoppingcart', 'Einkaufswagen')
+ensure_calendar(root, 'inventory', 'Produktbestand')

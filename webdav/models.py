@@ -102,13 +102,13 @@ class Resource(models.Model):
     @property
     def username(self) -> str:
         if self.user is None:
-            return '-'
+            return 'shared'
         return self.user.username
 
     @property
     def storage_dir(self) -> str:
         if self.user is None:
-            return '-'
+            return 'shared'
         return str(self.user.id)
 
     @property
