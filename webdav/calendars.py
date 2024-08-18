@@ -46,14 +46,17 @@ def ensure_calendar(root: Resource, name: str, displayname: str) -> Resource:
         )
         resource.prop_set.create(
             name='{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
+            is_xml=True,
             value='<B:comp xmlns:B="urn:ietf:params:xml:ns:caldav" xmlns:A="DAV:" name="VTODO"/>'
         )
         resource.prop_set.create(
             name='{urn:ietf:params:xml:ns:caldav}calendar-free-busy-set',
+            is_xml=True,
             value='<NO xmlns:A="DAV:" xmlns:B="urn:ietf:params:xml:ns:caldav"/>'
         )
         resource.prop_set.create(
             name='{urn:ietf:params:xml:ns:caldav}calendar-timezone',
+            is_xml=True,
             value='''
 BEGIN:VCALENDAR
 VERSION:2.0
