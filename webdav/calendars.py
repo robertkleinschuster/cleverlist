@@ -8,15 +8,11 @@ def ensure_root() -> Resource:
         parent=None
     ).exists()
     if exists:
-        resource = Resource.objects.get(
+        return Resource.objects.get(
             user=None,
             name='calendars',
             parent=None
         )
-        if resource.user_id:
-            resource.user = None
-            resource.save()
-        return resource
     else:
         return Resource.objects.create(
             user=None,
@@ -31,14 +27,10 @@ def ensure_calendar(root: Resource, name: str, displayname: str) -> Resource:
         name=name,
     ).exists()
     if exists:
-        resource = Resource.objects.get(
+        return Resource.objects.get(
             parent=root,
             name=name,
         )
-        if resource.user_id:
-            resource.user = None
-            resource.save()
-        return resource
     else:
         resource = Resource.objects.create(
             user=None,
