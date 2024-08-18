@@ -103,13 +103,13 @@ class Resource(models.Model):
     def username(self) -> str:
         if self.user is None:
             return 'shared'
-        return self.user.username
+        return self.user.get_username()
 
     @property
     def storage_dir(self) -> str:
         if self.user is None:
             return 'shared'
-        return str(self.user.id)
+        return str(self.user.pk)
 
     @property
     def progenitor(self):

@@ -416,7 +416,7 @@ class WebDAV(View):
                     request,
                     sub(
                         r"%s$" % (user),
-                        "%s" % (resource.user),
+                        "%s" % (resource.username),
                         request.path.rstrip("/")
                     ) + "/" + resource.name,
                     resource,
