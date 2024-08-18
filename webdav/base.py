@@ -292,7 +292,6 @@ class WebDAV(View):
         if resource.shoppingitem_id:
             shoppingitem = resource.shoppingitem
             todo = parse_todo(self.storage.retrieve_string(resource))
-            shoppingitem.name = todo.summary
             shoppingitem.in_cart = todo.completed is not None
             shoppingitem.save()
 
