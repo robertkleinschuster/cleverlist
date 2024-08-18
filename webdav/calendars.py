@@ -54,26 +54,27 @@ def ensure_calendar(root: Resource, name: str, displayname: str) -> Resource:
         )
         resource.prop_set.create(
             name='{urn:ietf:params:xml:ns:caldav}calendar-timezone',
-            value=
-            '''BEGIN:VCALENDAR
-            VERSION:2.0
-            CALSCALE:GREGORIAN
-            BEGIN:VTIMEZONE
-            TZID:Europe/Vienna
-            BEGIN:DAYLIGHT
-            TZOFFSETFROM:+0100
-            RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
-            DTSTART:19810329T020000
-            TZNAME:MESZ
-            TZOFFSETTO:+0200
-            END:DAYLIGHT
-            BEGIN:STANDARD
-            TZOFFSETFROM:+0200
-            RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
-            DTSTART:19961027T030000
-            TZNAME:MEZ
-            TZOFFSETTO:+0100
-            END:STANDARD
-            END:VTIMEZONE
-            END:VCALENDAR'''
+            value='''
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Europe/Vienna
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+DTSTART:19810329T020000
+TZNAME:MESZ
+TZOFFSETTO:+0200
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+DTSTART:19961027T030000
+TZNAME:MEZ
+TZOFFSETTO:+0100
+END:STANDARD
+END:VTIMEZONE
+END:VCALENDAR
+'''
         )
