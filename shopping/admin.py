@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.utils import timezone
 from django.utils.html import format_html
 
 from cleverlist.admin import ListActionModelAdmin
@@ -105,12 +106,16 @@ class ListAdmin(ListActionModelAdmin):
 
 @admin.action(description=_("Add to cart"))
 def add_to_cart(modeladmin, request, queryset):
-    queryset.update(in_cart=True)
+    item = queryset.get()
+    item.in_cart = True
+    item.save()
 
 
 @admin.action(description=_("Remove from cart"))
 def remove_from_cart(modeladmin, request, queryset):
-    queryset.update(in_cart=False)
+    item = queryset.get()
+    item.in_cart = False
+    item.save()
 
 
 @admin.action(description=_("Move to inventory"))
