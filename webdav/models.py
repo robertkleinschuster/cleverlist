@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
+from django.utils import timezone
+
 import webdav
 import webdav.exceptions
 from lxml import etree
 
+from shopping.models import Item
 from todo.models import Task
 import uuid
 from django.db.models.signals import post_save, pre_delete
@@ -18,6 +21,7 @@ class Resource(models.Model):
     groups = models.ManyToManyField(Group, blank=True)
     parent = models.ForeignKey('Resource', on_delete=models.CASCADE, null=True, blank=True)
     task = models.OneToOneField(Task, on_delete=models.CASCADE, null=True, blank=True)
+    shoppingitem = models.OneToOneField(Item, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255, db_index=True)
     collection = models.BooleanField(default=False, db_index=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
@@ -141,20 +145,16 @@ def delete_file(sender, instance: Resource, **kwargs):
 
 
 @receiver(post_save, sender=Task)
-def save_caldav(sender, instance: Task, created, **kwargs):
+def save_resource_for_task(sender, instance: Task, created, **kwargs):
+    todoData = TodoData(
+        summary=instance.name,
+        due=instance.deadline,
+        completed=instance.done
+    )
     storage = FSStorage()
     if Resource.objects.filter(task=instance).exists():
         resource = Resource.objects.get(task=instance)
-
-        ics = change_todo(
-            storage.retrieve_string(resource),
-            TodoData(
-                summary=instance.name,
-                due=instance.deadline,
-                completed=instance.done
-            )
-        )
-
+        ics = change_todo(storage.retrieve_string(resource), todoData)
         resource.size = len(ics)
         resource.save()
         storage.store_string(ics, resource)
@@ -163,15 +163,7 @@ def save_caldav(sender, instance: Task, created, **kwargs):
     if Resource.objects.filter(name="tasks").exists():
         parent = Resource.objects.get(name="tasks")
         uid = str(uuid.uuid4())
-        ics = create_todo(
-            uid,
-            TodoData(
-                summary=instance.name,
-                due=instance.deadline,
-                completed=instance.done
-            )
-        )
-
+        ics = create_todo(uid, todoData)
         resource = Resource.objects.create(
             name=f'{uid}.ics',
             uuid=uid,
@@ -181,5 +173,40 @@ def save_caldav(sender, instance: Task, created, **kwargs):
             content_type='text/calendar; charset=utf-8',
             size=len(ics),
         )
+        storage.store_string(ics, resource)
 
+
+@receiver(post_save, sender=Item)
+def save_resource_for_shoppingitem(sender, instance: Item, created, **kwargs):
+    completed = None
+    if instance.in_cart:
+        completed = timezone.now()
+
+    todoData = TodoData(
+        summary=str(instance),
+        completed=completed
+    )
+
+    storage = FSStorage()
+    if Resource.objects.filter(shoppingitem=instance).exists():
+        resource = Resource.objects.get(shoppingitem=instance)
+        ics = change_todo(storage.retrieve_string(resource), todoData)
+        resource.size = len(ics)
+        resource.save()
+        storage.store_string(ics, resource)
+        return
+
+    if Resource.objects.filter(name="shoppingitems").exists():
+        parent = Resource.objects.get(name="shoppingitems")
+        uid = str(uuid.uuid4())
+        ics = create_todo(uid, todoData)
+        resource = Resource.objects.create(
+            name=f'{uid}.ics',
+            uuid=uid,
+            parent=parent,
+            user_id=parent.user_id,
+            shoppingitem=instance,
+            content_type='text/calendar; charset=utf-8',
+            size=len(ics),
+        )
         storage.store_string(ics, resource)

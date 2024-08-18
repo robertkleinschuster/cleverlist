@@ -288,6 +288,14 @@ class WebDAV(View):
             task.deadline = todo.due
             task.done = todo.completed
             task.save()
+
+        if resource.shoppingitem_id:
+            shoppingitem = resource.shoppingitem
+            todo = parse_todo(self.storage.retrieve_string(resource))
+            shoppingitem.name = todo.summary
+            shoppingitem.in_cart = todo.completed is not None
+            shoppingitem.save()
+
         return webdav.created(request)
 
     def mkcol(self, request, user, resource_name):
