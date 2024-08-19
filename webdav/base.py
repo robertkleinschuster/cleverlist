@@ -79,7 +79,7 @@ class WebDAV(View):
                 dav_base += getattr(settings, 'DAVVY_EXTENSIONS', [])
                 response['Dav'] = ','.join(dav_base + self.dav_extensions)
             except webdav.exceptions.DavException as e:
-                print('error', e)
+                print('error', e.status)
                 code, phrase = e.status.split(' ', 1)
                 response = HttpResponse(phrase, content_type='text/plain')
                 response.status_code = int(code)
