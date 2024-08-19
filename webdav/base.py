@@ -397,7 +397,7 @@ class WebDAV(View):
             if shared:  # we skip it if unnecessary
                 # add shared resources from groups
                 shared_resources = Resource.objects.prefetch_related('prop_set').filter(
-                   Q(user=None, parent__isnull=False) | Q(groups__in=request.user.groups.all())
+                    Q(user=None) & Q(parent__isnull=False) | Q(groups__in=request.user.groups.all())
                 )
 
                 # consider only shared resources having the same progenitor
