@@ -69,6 +69,8 @@ class WebDAV(View):
             login(request, user)
             request.user = user
             try:
+                print('user', user)
+
                 response = super(WebDAV, self).dispatch(
                     request, username, *args, **kwargs
                 )
@@ -76,6 +78,7 @@ class WebDAV(View):
                 dav_base += getattr(settings, 'DAVVY_EXTENSIONS', [])
                 response['Dav'] = ','.join(dav_base + self.dav_extensions)
             except webdav.exceptions.DavException as e:
+                print('error', e)
                 code, phrase = e.status.split(' ', 1)
                 response = HttpResponse(phrase, content_type='text/plain')
                 response.status_code = int(code)
@@ -85,7 +88,7 @@ class WebDAV(View):
             response.status_code = 401
             response['WWW-Authenticate'] = 'Basic realm="cleverlist"'
 
-        print(request, response)
+        print('response', response)
         return response
 
     def options(self, request, user, resource_name):
