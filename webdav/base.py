@@ -53,6 +53,7 @@ class WebDAV(View):
 
     @csrf_exempt
     def dispatch(self, request, username, *args, **kwargs):
+        print('request', request)
         user = None
         # REMOTE_USER should be always honored
         if 'REMOTE_USER' in request.META:
