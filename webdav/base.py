@@ -85,6 +85,7 @@ class WebDAV(View):
             response.status_code = 401
             response['WWW-Authenticate'] = 'Basic realm="cleverlist"'
 
+        print(request, response)
         return response
 
     def options(self, request, user, resource_name):
