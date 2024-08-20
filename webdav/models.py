@@ -100,9 +100,9 @@ class Resource(models.Model):
             return ''
 
     @property
-    def username(self) -> str:
+    def username(self) -> str | None:
         if self.user_id is None:
-            return 'shared'
+            return None
         return self.user.username
 
     @property

@@ -53,7 +53,8 @@ class WebDAV(View):
 
     @csrf_exempt
     def dispatch(self, request, username, *args, **kwargs):
-        print('request', request)
+        if username == 'shared':
+            username = None
         user = None
         # REMOTE_USER should be always honored
         if 'REMOTE_USER' in request.META:
@@ -66,7 +67,7 @@ class WebDAV(View):
                     user = authenticate(username=uname, password=passwd)
 
         if (user and user.is_active) and (
-                user.username == username or username == 'shared' or _check_group_sharing(user, username)):
+                user.username == username or username is None or _check_group_sharing(user, username)):
             login(request, user)
             request.user = user
             try:
@@ -92,15 +93,15 @@ class WebDAV(View):
         print('response', response)
         return response
 
-    def options(self, request, user, resource_name):
+    def options(self, request, username, resource_name):
         response = HttpResponse()
         response['Allow'] = ','.join(
             [method.upper() for method in self.http_method_names]
         )
         return response
 
-    def head(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name)
+    def head(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name)
         if resource.collection:
             return HttpResponseForbidden()
         response = HttpResponse(content_type=resource.content_type)
@@ -109,8 +110,8 @@ class WebDAV(View):
             'Content-Disposition'] = "attachment; filename=%s" % resource.name
         return response
 
-    def get(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name)
+    def get(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name)
 
         if resource.collection:
             return HttpResponseForbidden()
@@ -125,8 +126,8 @@ class WebDAV(View):
             'Content-Disposition'] = "attachment; filename=%s" % resource.name
         return response
 
-    def delete(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name)
+    def delete(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name)
 
         # you can't delete protected resources
         if resource.protected:
@@ -144,7 +145,7 @@ class WebDAV(View):
         resource.delete()
         return HttpResponse(status=204)
 
-    def _get_destination(self, request, user, resource_name):
+    def _get_destination(self, request, username, resource_name):
         destination = request.META['HTTP_DESTINATION']
         # ignore http(s) schema
         destination = sub(r"^http[s]*://", "", destination)
@@ -162,18 +163,18 @@ class WebDAV(View):
             if not destination.startswith(base):
                 raise webdav.exceptions.BadGateway()
         except AttributeError:  # if something goes wrong while catching the user
-            destination_user = user
+            destination_user = username
         finally:
             # return destination resource and related user
             return destination[len(base) + len(destination_user) + 1:].rstrip('/'), destination_user
 
-    def move(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name)
+    def move(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name)
         # depth = request.META.get('HTTP_DEPTH', 'infinity')
         overwrite = request.META.get('HTTP_OVERWRITE', 'T')
 
         destination, destination_user = self._get_destination(
-            request, user, resource_name)
+            request, username, resource_name)
 
         result = webdav.created
 
@@ -222,18 +223,18 @@ class WebDAV(View):
 
         return result(request)
 
-    def _copy_resource(self, request, resource, destination, overwrite):
+    def _copy_resource(self, request, resource: Resource, destination, overwrite):
         result = webdav.created
 
         try:
-            resource2 = self.get_resource(request, resource.user, destination)
+            resource2 = self.get_resource(request, resource.username, destination)
             if overwrite == 'F':
                 raise webdav.exceptions.PreconditionFailed()
             elif overwrite == 'T':
                 result = webdav.nocontent
         except webdav.exceptions.NotFound:
             resource2 = self.get_resource(
-                request, resource.user, destination, create=True)
+                request, resource.username, destination, create=True)
 
         # copy the resource
         resource2.collection = resource.collection
@@ -259,8 +260,8 @@ class WebDAV(View):
                     request, child, destination + '/' + child.name, overwrite)
         return result
 
-    def copy(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name)
+    def copy(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name)
         overwrite = request.META.get('HTTP_OVERWRITE', 'T')
         depth = request.META.get('HTTP_DEPTH', 'infinity')
 
@@ -274,8 +275,8 @@ class WebDAV(View):
 
         return result(request)
 
-    def put(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name, create=True)
+    def put(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name, create=True)
         resource.content_type = request.META.get(
             'CONTENT_TYPE', 'application/octet-stream'
         )
@@ -298,14 +299,14 @@ class WebDAV(View):
 
         return webdav.created(request)
 
-    def mkcol(self, request, user, resource_name):
+    def mkcol(self, request, username, resource_name):
         cl = 0
         if 'CONTENT_LENGTH' in request.META and len(request.META['CONTENT_LENGTH']) > 0:
             cl = int(request.META['CONTENT_LENGTH'])
         if cl > 0:
             raise webdav.exceptions.UnsupportedMediaType()
         self.get_resource(
-            request, user, resource_name, create=True, collection=True, strict=True
+            request, username, resource_name, create=True, collection=True, strict=True
         )
         return webdav.created(request)
 
@@ -369,11 +370,11 @@ class WebDAV(View):
 
         return multistatus_response
 
-    def propfind(self, request, user, resource_name):
-        return self._propfinder(request, user, resource_name)
+    def propfind(self, request, username, resource_name):
+        return self._propfinder(request, username, resource_name)
 
-    def _propfinder(self, request, user, resource_name, shared=False):
-        resource = self.get_resource(request, user, resource_name)
+    def _propfinder(self, request, username, resource_name, shared=False):
+        resource = self.get_resource(request, username, resource_name)
 
         try:
             dom = etree.fromstring(request.read())
@@ -417,11 +418,15 @@ class WebDAV(View):
                     id__in=shared_resources_id)
 
             for resource in resources:
+                resource_username = resource.username
+                if resource_username is None:
+                    resource_username = 'shared'
+
                 multistatus_response = self._propfind_response(
                     request,
                     sub(
-                        r"%s$" % (user),
-                        "%s" % (resource.username),
+                        r"%s$" % (username),
+                        "%s" % (resource_username),
                         request.path.rstrip("/")
                     ) + "/" + resource.name,
                     resource,
@@ -485,28 +490,29 @@ class WebDAV(View):
         response.reason_phrase = 'Multi-Status'
         return response
 
-    def _get_root(self, user):
+    def _get_root(self, user: User):
         try:
-            resource = Resource.objects.prefetch_related('prop_set').get(
+            resource = Resource.objects.get(
                 name=self.root, user=user, parent=None, collection=True)
-        except:
+        except Resource.DoesNotExist:
             resource = Resource.objects.create(
                 name=self.root, user=user, parent=None, collection=True)
         return resource
 
-    def get_resource(self, request, user, name, create=False, collection=False, strict=False):
+    def get_resource(self, request, username: str | None, resource_name: str, create=False, collection=False,
+                     strict=False):
         resource_user = None
-        if user != 'shared':
-            resource_user = User.objects.get(username=user)
+        if username is not None:
+            resource_user = User.objects.get(username=username)
 
         # remove final slashes
-        name = name.rstrip('/')
+        resource_name = resource_name.rstrip('/')
         parent = self._get_root(resource_user)
 
-        if not name:
+        if not resource_name:
             return parent
         # split the name
-        parts = name.split('/')
+        parts = resource_name.split('/')
 
         # skip the last item
         # on error, returns conflict

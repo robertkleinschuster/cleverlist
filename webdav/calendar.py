@@ -12,29 +12,29 @@ logger = logging.getLogger(__name__)
 
 
 class CalDAV(WebDAV):
-
-    #collection_type = ['{urn:ietf:params:xml:ns:caldav}calendar', '{DAV:}collection']
+    # collection_type = ['{urn:ietf:params:xml:ns:caldav}calendar', '{DAV:}collection']
     subcollection_type = [
         '{urn:ietf:params:xml:ns:caldav}calendar', '{DAV:}collection']
     dav_extensions = ['calendar-access', 'calendar']
 
     def __init__(self, **kwargs):
         self.http_method_names = WebDAV.http_method_names + \
-            ['mkcalendar', 'report']
+                                 ['mkcalendar', 'report']
         super(CalDAV, self).__init__(**kwargs)
 
-    def propfind(self, request, user, resource_name):
-        return super(CalDAV, self)._propfinder(request, user, resource_name, shared=True)
+    def propfind(self, request, username, resource_name):
+        return super(CalDAV, self)._propfinder(request, username, resource_name, shared=True)
 
-    def put(self, request, user, resource_name):
-        if not request.META['CONTENT_TYPE'].startswith('text/calendar;') and request.META['CONTENT_TYPE'] != 'text/calendar':
+    def put(self, request, username, resource_name):
+        if not request.META['CONTENT_TYPE'].startswith('text/calendar;') and request.META[
+            'CONTENT_TYPE'] != 'text/calendar':
             return HttpResponseForbidden()
-        return super(CalDAV, self).put(request, user, resource_name)
+        return super(CalDAV, self).put(request, username, resource_name)
 
-    def mkcalendar(self, request, user, resource_name):
+    def mkcalendar(self, request, username, resource_name):
 
         resource = self.get_resource(
-            request, user, resource_name, create=True, collection=True, strict=True
+            request, username, resource_name, create=True, collection=True, strict=True
         )
 
         cl = int(request.META.get('CONTENT_LENGTH', '0'))
@@ -57,7 +57,7 @@ class CalDAV(WebDAV):
             doc_propstat = etree.Element('{DAV:}propstat')
             doc_propstat_status = etree.Element('{DAV:}status')
             doc_propstat_status.text = request.META[
-                'SERVER_PROTOCOL'] + ' 200 OK'
+                                           'SERVER_PROTOCOL'] + ' 200 OK'
             doc_propstat.append(doc_propstat_status)
             doc.append(doc_propstat)
 
@@ -123,8 +123,8 @@ class CalDAV(WebDAV):
         pos = href.find(resource_name)
         return href[pos:]
 
-    def report(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name)
+    def report(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name)
 
         try:
             dom = etree.fromstring(request.read())
@@ -156,7 +156,7 @@ class CalDAV(WebDAV):
             hrefs = dom.iterfind('{DAV:}href')
             for href in hrefs:
                 child = self.get_resource(
-                    request, user, self.get_href(href.text, resource_name))
+                    request, username, self.get_href(href.text, resource_name))
                 doc.append(self._multiget_response(request, child, href.text))
         else:
             raise webdav.exceptions.BadRequest()

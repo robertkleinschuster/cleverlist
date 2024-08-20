@@ -62,8 +62,8 @@ class CardDAV(WebDAV):
 
         return multistatus_response
 
-    def report(self, request, user, resource_name):
-        resource = self.get_resource(request, user, resource_name)
+    def report(self, request, username, resource_name):
+        resource = self.get_resource(request, username, resource_name)
 
         try:
             dom = etree.fromstring(request.read())
@@ -78,7 +78,7 @@ class CardDAV(WebDAV):
             hrefs = dom.iterfind('{DAV:}href')
             for href in hrefs:
                 resource = self.get_resource(
-                    request, user, href.text[len(request.path):])
+                    request, username, href.text[len(request.path):])
                 if not resource.collection:
                     doc.append(
                         self._multiget_response(request, resource, href.text))
