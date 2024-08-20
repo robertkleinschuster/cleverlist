@@ -490,7 +490,7 @@ class WebDAV(View):
         response.reason_phrase = 'Multi-Status'
         return response
 
-    def _get_root(self, user: User):
+    def _get_root(self, user: User | None):
         try:
             resource = Resource.objects.get(
                 name=self.root, user=user, parent=None, collection=True)
@@ -544,7 +544,7 @@ class WebDAV(View):
                     collection=collection
                 )
             else:
-                print('not found in get_resource resource_user: ', resource_user, ' resource_name: ', parts[-1])
+                print('not found in get_resource resource_user: ', resource_user, ' resource_name: ', parts[-1], ' parent: ', parent)
                 raise webdav.exceptions.NotFound()
         return resource
 
