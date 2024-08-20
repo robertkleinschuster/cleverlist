@@ -53,8 +53,6 @@ class WebDAV(View):
 
     @csrf_exempt
     def dispatch(self, request, username, *args, **kwargs):
-        if username == 'shared':
-            username = None
         user = None
         # REMOTE_USER should be always honored
         if 'REMOTE_USER' in request.META:
@@ -67,12 +65,12 @@ class WebDAV(View):
                     user = authenticate(username=uname, password=passwd)
 
         if (user and user.is_active) and (
-                user.username == username or username is None or _check_group_sharing(user, username)):
+                user.username == username or username == 'shared'):
             login(request, user)
             request.user = user
             try:
-                print('user', user)
-
+                if username == 'shared':
+                    username = None
                 response = super(WebDAV, self).dispatch(
                     request, username, *args, **kwargs
                 )
@@ -93,7 +91,7 @@ class WebDAV(View):
         print('response', response)
         return response
 
-    def options(self, request, username, resource_name):
+    def options(self, request, *args, **kwargs):
         response = HttpResponse()
         response['Allow'] = ','.join(
             [method.upper() for method in self.http_method_names]
@@ -402,33 +400,23 @@ class WebDAV(View):
 
             if shared:  # we skip it if unnecessary
                 # add shared resources from groups
-                shared_resources = Resource.objects.prefetch_related('prop_set').filter(
-                    Q(user=None) & Q(parent__isnull=False) | Q(groups__in=request.user.groups.all())
-                )
+                shared_resources = Resource.objects.prefetch_related('prop_set').filter(collection=False,
+                                                                                        user=None,
+                                                                                        parent__parent__name=self.root)
 
-                # consider only shared resources having the same progenitor
-                # so, if resource is a calendar, only calendars, and so on...
-                resource_progenitor = resource.progenitor.name if resource.progenitor else self.root
-                shared_resources_id = [r.id
-                                       for r in shared_resources
-                                       if r.progenitor.name == resource_progenitor
-                                       ]
-
-                resources |= shared_resources.filter(
-                    id__in=shared_resources_id)
+                for resource in shared_resources:
+                    multistatus_response = self._propfind_response(
+                        request,
+                        f'{self.root}/shared/{resource.name}',
+                        resource,
+                        requested_props
+                    )
+                    doc.append(multistatus_response)
 
             for resource in resources:
-                resource_username = resource.username
-                if resource_username is None:
-                    resource_username = 'shared'
-
                 multistatus_response = self._propfind_response(
                     request,
-                    sub(
-                        r"%s$" % (username),
-                        "%s" % (resource_username),
-                        request.path.rstrip("/")
-                    ) + "/" + resource.name,
+                    f'{self.root}/{username}/{resource.name}',
                     resource,
                     requested_props
                 )
@@ -544,7 +532,8 @@ class WebDAV(View):
                     collection=collection
                 )
             else:
-                print('not found in get_resource resource_user: ', resource_user, ' resource_name: ', parts[-1], ' parent: ', parent)
+                print('not found in get_resource resource_user: ', resource_user, ' resource_name: ', parts[-1],
+                      ' parent: ', parent)
                 raise webdav.exceptions.NotFound()
         return resource
 
