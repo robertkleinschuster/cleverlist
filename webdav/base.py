@@ -544,6 +544,7 @@ class WebDAV(View):
                     collection=collection
                 )
             else:
+                print('not found in get_resource resource_user: ', resource_user, ' resource_name: ', parts[-1])
                 raise webdav.exceptions.NotFound()
         return resource
 
