@@ -53,6 +53,8 @@ class WebDAV(View):
 
     @csrf_exempt
     def dispatch(self, request, username, *args, **kwargs):
+        print(request)
+
         user = None
         # REMOTE_USER should be always honored
         if 'REMOTE_USER' in request.META:
@@ -64,8 +66,7 @@ class WebDAV(View):
                     uname, passwd = base64.b64decode(auth[1]).decode('utf-8').split(':')
                     user = authenticate(username=uname, password=passwd)
 
-        if (user and user.is_active) and (
-                user.username == username or username == 'shared'):
+        if user and user.is_active and username in [user.username, 'shared']:
             login(request, user)
             request.user = user
             try:
