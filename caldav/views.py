@@ -71,6 +71,7 @@ def home_handler(request):
 
     helper.add_tasklist(multistatus, 'tasks', 'Aufgaben')
     helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste')
+    helper.add_tasklist(multistatus, 'shoppingcart', 'Einkaufswagen')
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
     return HttpResponse(xml_str, content_type='application/xml')
@@ -89,6 +90,10 @@ def tasklist_handler(request, calendar_id):
 
     if calendar_id == 'shoppinglist':
         for task_id, task in helper.get_shoppingitems():
+            helper.add_todo(multistatus, calendar_id, task_id, task)
+
+    if calendar_id == 'shoppingcart':
+        for task_id, task in helper.get_shoppingcart():
             helper.add_todo(multistatus, calendar_id, task_id, task)
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
@@ -122,6 +127,8 @@ def task_handler(request, calendar_id, event_uid):
     if calendar_id == 'shoppinglist':
         calendar = helper.get_shoppingitem(id)
 
+    if calendar_id == 'shoppingcart':
+        calendar = helper.get_shoppingitem(id)
     if calendar is not None:
         return HttpResponse(calendar.to_ical().decode('utf-8'), content_type='text/calendar')
 

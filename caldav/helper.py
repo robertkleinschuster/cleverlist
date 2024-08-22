@@ -64,6 +64,10 @@ def get_shoppingitems() -> list[Calendar]:
         cal = get_shoppingitem(item)
         yield cal.subcomponents[0]['uid'], cal
 
+def get_shoppingcart() -> list[Calendar]:
+    for item in Item.objects.filter(in_cart=True).all():
+        cal = get_shoppingitem(item)
+        yield cal.subcomponents[0]['uid'], cal
 
 def get_task(id: int | Task) -> Calendar:
     if isinstance(id, Task):
