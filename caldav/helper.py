@@ -58,13 +58,13 @@ def add_todo(multistatus: etree.Element, calendar_id: str, event_id: str, icalen
 
 
 def get_tasks() -> list[Calendar]:
-    for task in Task.objects.all():
+    for task in Task.objects.prefetch_related('tags').all():
         cal = get_task(task)
         yield cal.subcomponents[0]['uid'], cal
 
 
 def get_shoppingitems() -> list[Calendar]:
-    for item in Item.objects.all():
+    for item in Item.objects.prefetch_related('tags').all():
         cal = get_shoppingitem(item)
         yield cal.subcomponents[0]['uid'], cal
 
@@ -111,6 +111,8 @@ def get_shoppingitem(id: int | Item) -> Calendar:
         todo['status'] = 'COMPLETED'
     else:
         todo['status'] = 'NEEDS-ACTION'
+
+    todo['description'] = ", ".join([str(tag) for tag in item.tags.all()])
 
     cal = Calendar()
     cal.add_component(todo)
