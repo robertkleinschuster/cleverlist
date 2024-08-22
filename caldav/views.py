@@ -97,8 +97,13 @@ def tasklist_handler(request, calendar_id):
 
 @csrf_exempt
 def task_handler(request, calendar_id, event_uid):
+    if request.method == 'PUT':
+        if calendar_id == 'tasks':
+            helper.update_task(int(event_uid), helper.calendar_from_request(request))
+        if calendar_id == 'shoppinglist':
+            helper.update_shoppingitem(int(event_uid), helper.calendar_from_request(request))
+        return HttpResponse(status=204)
     if request.method != 'GET':
-        print(request)
         return HttpResponseNotAllowed(['GET'])
 
     calendar = None

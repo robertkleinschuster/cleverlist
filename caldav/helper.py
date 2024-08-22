@@ -1,3 +1,5 @@
+from django.http import HttpRequest
+from django.utils import timezone
 from icalendar import Todo, vDatetime, Calendar
 from lxml import etree
 
@@ -101,3 +103,31 @@ def get_shoppingitem(id: int | Item) -> Calendar:
     cal = Calendar()
     cal.add_component(todo)
     return cal
+
+
+def calendar_from_request(request: HttpRequest) -> Calendar:
+    return Calendar.from_ical(request.body)
+
+
+def update_task(id: int, cal: Calendar):
+    task = Task.objects.get(id=id)
+    todo = cal.subcomponents[0]
+    if todo['status'] == 'NEEDS-ACTION' and task.done:
+        task.done = None
+        task.save()
+
+    if todo['status'] == 'COMPLETED' and task.done is None:
+        task.done = timezone.now()
+        task.save()
+
+
+def update_shoppingitem(id: int, cal: Calendar):
+    item = Item.objects.get(id=id)
+    todo = cal.subcomponents[0]
+    if todo['status'] == 'NEEDS-ACTION' and item.in_cart is True:
+        item.in_cart = False
+        item.save()
+
+    if todo['status'] == 'COMPLETED' and item.in_cart is False:
+        item.in_cart = True
+        item.save()
