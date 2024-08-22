@@ -53,27 +53,46 @@ def principal_handler(request):
     if request.method != 'PROPFIND':
         return HttpResponseNotAllowed(['PROPFIND'])
 
+    # Define namespaces
     nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
+
+    # Create the multistatus element
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
 
+    # Create a response element for the principal resource
     response = etree.SubElement(multistatus, '{DAV:}response')
     href = etree.SubElement(response, '{DAV:}href')
     href.text = '/caldav/principal/'
 
+    # Create propstat element to hold properties
     propstat = etree.SubElement(response, '{DAV:}propstat')
     prop = etree.SubElement(propstat, '{DAV:}prop')
 
+    # Add current-user-principal
     current_user_principal = etree.SubElement(prop, '{DAV:}current-user-principal')
     principal_href = etree.SubElement(current_user_principal, '{DAV:}href')
     principal_href.text = '/caldav/principal/'
 
+    # Add calendar-home-set
     calendar_home_set = etree.SubElement(prop, '{urn:ietf:params:xml:ns:caldav}calendar-home-set')
     home_href = etree.SubElement(calendar_home_set, '{DAV:}href')
-    home_href.text = '/caldav/home/'
+    home_href.text = '/caldav/home/'  # This should be the URL where calendars are located
 
+    # Add displayname
+    displayname = etree.SubElement(prop, '{DAV:}displayname')
+    displayname.text = 'Cleverlist'
+
+    # Add supported-calendar-component-set
+    supported_calendar_component_set = etree.SubElement(
+        prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
+    )
+    etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
+
+    # Set the status for the propstat
     status = etree.SubElement(propstat, '{DAV:}status')
     status.text = 'HTTP/1.1 200 OK'
 
+    # Convert the XML tree to a string
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
     return HttpResponse(xml_str, content_type='application/xml')
 
