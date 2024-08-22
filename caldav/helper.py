@@ -67,7 +67,7 @@ def get_tasks() -> list[Calendar]:
 
         cal = Calendar()
         cal.add_component(todo)
-        yield task.id, cal
+        yield todo['uid'], cal
 
 
 def get_shoppingitems() -> list[Calendar]:
@@ -82,7 +82,7 @@ def get_shoppingitems() -> list[Calendar]:
 
         cal = Calendar()
         cal.add_component(todo)
-        yield item.id, cal
+        yield todo['uid'], cal
 
 
 def get_task(id: int) -> Calendar:
