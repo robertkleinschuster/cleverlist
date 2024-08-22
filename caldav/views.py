@@ -1,5 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
+
 # Create your views here.
 
 # Hardcoded to-do lists (events)
@@ -29,6 +31,7 @@ TODO_LISTS = {
 }
 
 
+@csrf_exempt
 def options_handler(request):
     if request.method == 'OPTIONS':
         response = HttpResponse()
@@ -40,10 +43,12 @@ def options_handler(request):
         return HttpResponseNotAllowed(['OPTIONS'])
 
 
+@csrf_exempt
 def well_known_caldav_redirect(request):
     return HttpResponseRedirect('/caldav/principal/')
 
 
+@csrf_exempt
 def principal_handler(request):
     if request.method != 'PROPFIND':
         return HttpResponseNotAllowed(['PROPFIND'])
@@ -73,6 +78,7 @@ def principal_handler(request):
     return HttpResponse(xml_str, content_type='application/xml')
 
 
+@csrf_exempt
 def home_handler(request):
     if request.method != 'PROPFIND':
         return HttpResponseNotAllowed(['PROPFIND'])
@@ -95,7 +101,9 @@ def home_handler(request):
         etree.SubElement(resourcetype, '{DAV:}collection')
         etree.SubElement(resourcetype, '{urn:ietf:params:xml:ns:caldav}calendar')
 
-        supported_calendar_component_set = etree.SubElement(prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set')
+        supported_calendar_component_set = etree.SubElement(
+            prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
+        )
         etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
 
         status = etree.SubElement(propstat, '{DAV:}status')
@@ -105,6 +113,7 @@ def home_handler(request):
     return HttpResponse(xml_str, content_type='application/xml')
 
 
+@csrf_exempt
 def propfind(request, calendar_id):
     if request.method != 'PROPFIND':
         return HttpResponseNotAllowed(['PROPFIND'])
@@ -145,6 +154,7 @@ def propfind(request, calendar_id):
     return HttpResponse(xml_str, content_type='application/xml')
 
 
+@csrf_exempt
 def get_event(request, calendar_id, event_uid):
     if request.method != 'GET':
         return HttpResponseNotAllowed(['GET'])
