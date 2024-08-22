@@ -122,7 +122,7 @@ def home_handler(request):
 
 
 @csrf_exempt
-def propfind(request, calendar_id):
+def tasklist_handler(request, calendar_id):
     if request.method not in ['PROPFIND', 'REPORT']:
         return HttpResponseNotAllowed(['PROPFIND', 'REPORT'])
 
@@ -168,8 +168,9 @@ def propfind(request, calendar_id):
 
 
 @csrf_exempt
-def get_event(request, calendar_id, event_uid):
+def task_handler(request, calendar_id, event_uid):
     if request.method != 'GET':
+        print('task_handler', request.method)
         return HttpResponseNotAllowed(['GET'])
 
     todos = TODO_LISTS.get(calendar_id, [])
