@@ -53,40 +53,21 @@ def add_todo(multistatus: etree.Element, calendar_id: str, event_id: str, icalen
 
 def get_tasks() -> list[Calendar]:
     for task in Task.objects.all():
-        todo = Todo()
-        todo['uid'] = f"task-{task.id}"
-        todo['summary'] = task.name
-        if task.done:
-            todo['status'] = 'COMPLETED'
-            todo['completed'] = vDatetime(task.done)
-        else:
-            todo['status'] = 'NEEDS-ACTION'
-
-        if task.deadline:
-            todo['due'] = vDatetime(task.deadline)
-
-        cal = Calendar()
-        cal.add_component(todo)
-        yield todo['uid'], cal
+        cal = get_task(task)
+        yield cal.subcomponents[0]['uid'], cal
 
 
 def get_shoppingitems() -> list[Calendar]:
     for item in Item.objects.all():
-        todo = Todo()
-        todo['uid'] = f"shoppingitem-{item.id}"
-        todo['summary'] = item.name
-        if item.in_cart:
-            todo['status'] = 'COMPLETED'
-        else:
-            todo['status'] = 'NEEDS-ACTION'
-
-        cal = Calendar()
-        cal.add_component(todo)
-        yield todo['uid'], cal
+        cal = get_shoppingitem(item)
+        yield cal.subcomponents[0]['uid'], cal
 
 
-def get_task(id: int) -> Calendar:
-    task = Task.objects.get(id=id)
+def get_task(id: int | Task) -> Calendar:
+    if isinstance(id, Task):
+        task = id
+    else:
+        task = Task.objects.get(id=id)
     todo = Todo()
     todo['uid'] = f"task-{task.id}"
     todo['summary'] = task.name
@@ -104,8 +85,11 @@ def get_task(id: int) -> Calendar:
     return cal
 
 
-def get_shoppingitem(id: int) -> Calendar:
-    item = Item.objects.get(id=id)
+def get_shoppingitem(id: int | Item) -> Calendar:
+    if isinstance(id, Item):
+        item = id
+    else:
+        item = Item.objects.get(id=id)
     todo = Todo()
     todo['uid'] = f"shoppingitem-{item.id}"
     todo['summary'] = item.name
