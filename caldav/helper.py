@@ -72,7 +72,7 @@ def get_task(id: int | Task) -> Calendar:
         task = Task.objects.get(id=id)
     todo = Todo()
     todo['uid'] = f"task-{task.id}"
-    todo['summary'] = task.name
+    todo['summary'] = str(task)
     if task.done:
         todo['status'] = 'COMPLETED'
         todo['completed'] = vDatetime(task.done)
@@ -94,7 +94,7 @@ def get_shoppingitem(id: int | Item) -> Calendar:
         item = Item.objects.get(id=id)
     todo = Todo()
     todo['uid'] = f"shoppingitem-{item.id}"
-    todo['summary'] = item.name
+    todo['summary'] = str(item)
     if item.in_cart:
         todo['status'] = 'COMPLETED'
     else:
@@ -112,12 +112,21 @@ def calendar_from_request(request: HttpRequest) -> Calendar:
 def update_task(id: int, cal: Calendar):
     task = Task.objects.get(id=id)
     todo = cal.subcomponents[0]
+    changed = False
     if todo['status'] == 'NEEDS-ACTION' and task.done:
         task.done = None
-        task.save()
+        changed = True
 
     if todo['status'] == 'COMPLETED' and task.done is None:
         task.done = timezone.now()
+        changed = True
+
+    summary = str(todo['summary'])
+    if summary and summary != task.name:
+        task.name = summary
+        changed = True
+
+    if changed:
         task.save()
 
 
