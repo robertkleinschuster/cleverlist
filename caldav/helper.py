@@ -7,7 +7,7 @@ from shopping.models import Item
 from todo.models import Task
 
 
-def add_tasklist(multistatus: etree.Element, id: str, name: str):
+def add_tasklist(multistatus: etree.Element, id: str, name: str, color = '#FF0000'):
     response = etree.SubElement(multistatus, '{DAV:}response')
     href = etree.SubElement(response, '{DAV:}href')
     href.text = f'/caldav/{id}/'
@@ -26,6 +26,10 @@ def add_tasklist(multistatus: etree.Element, id: str, name: str):
         prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
     )
     etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
+
+    calendar_color = etree.SubElement(prop, '{http://apple.com/ns/ical/}calendar-color')
+    calendar_color.text = color  # The color should be a hex value like "#FF0000" for red
+
 
     status = etree.SubElement(propstat, '{DAV:}status')
     status.text = 'HTTP/1.1 200 OK'

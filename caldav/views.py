@@ -69,9 +69,9 @@ def home_handler(request):
     nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
 
-    helper.add_tasklist(multistatus, 'tasks', 'Aufgaben')
-    helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste')
-    helper.add_tasklist(multistatus, 'shoppingcart', 'Einkaufswagen')
+    helper.add_tasklist(multistatus, 'tasks', 'Aufgaben', '#4A0080')
+    helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste', '#FFA600')
+    helper.add_tasklist(multistatus, 'shoppingcart', 'Einkaufswagen', '#FFA600')
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
     return HttpResponse(xml_str, content_type='application/xml')
