@@ -123,8 +123,8 @@ def home_handler(request):
 
 @csrf_exempt
 def propfind(request, calendar_id):
-    if request.method != 'PROPFIND':
-        return HttpResponseNotAllowed(['PROPFIND'])
+    if request.method not in ['PROPFIND', 'REPORT']:
+        return HttpResponseNotAllowed(['PROPFIND', 'REPORT'])
 
     nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
