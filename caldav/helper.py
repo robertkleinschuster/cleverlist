@@ -145,7 +145,7 @@ def change_task(id: int, cal: Calendar):
         task.save()
 
 
-def update_shoppingitem(id: int, cal: Calendar):
+def change_shoppingitem(id: int, cal: Calendar):
     item = Item.objects.get(id=id)
     todo = cal.subcomponents[0]
     if todo['status'] == 'NEEDS-ACTION' and item.in_cart is True:
@@ -155,3 +155,11 @@ def update_shoppingitem(id: int, cal: Calendar):
     if todo['status'] == 'COMPLETED' and item.in_cart is False:
         item.in_cart = True
         item.save()
+
+
+def delete_task(id: int):
+    Task.objects.get(id=id).delete()
+
+
+def delete_shoppingitem(id: int):
+    Item.objects.get(id=id).delete()

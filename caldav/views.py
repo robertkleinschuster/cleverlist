@@ -99,11 +99,18 @@ def tasklist_handler(request, calendar_id):
 def task_handler(request, calendar_id, event_uid):
     id = int(event_uid.split('-')[1])
 
+    if request.method == 'DElETE':
+        if calendar_id == 'tasks':
+            helper.delete_task(id)
+        if calendar_id == 'shoppinglist':
+            helper.delete_shoppingitem(id)
+        return HttpResponse(status=204)
+
     if request.method == 'PUT':
         if calendar_id == 'tasks':
             helper.change_task(id, helper.calendar_from_request(request))
         if calendar_id == 'shoppinglist':
-            helper.update_shoppingitem(id, helper.calendar_from_request(request))
+            helper.change_shoppingitem(id, helper.calendar_from_request(request))
         return HttpResponse(status=204)
     if request.method != 'GET':
         return HttpResponseNotAllowed(['GET'])
