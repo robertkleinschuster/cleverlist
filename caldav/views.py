@@ -3,34 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
 from caldav import helper
 
+
 # Create your views here.
-
-# Hardcoded to-do lists (events)
-TODO_LISTS = {
-    '1': [
-        {
-            'uid': 'todo-1',
-            'summary': 'Buy groceries',
-            'dtstart': '20230822T090000',
-            'dtend': '20230822T100000',
-        },
-        {
-            'uid': 'todo-2',
-            'summary': 'Walk the dog',
-            'dtstart': '20230822T110000',
-            'dtend': '20230822T113000',
-        },
-    ],
-    '2': [
-        {
-            'uid': 'todo-3',
-            'summary': 'Finish Django project',
-            'dtstart': '20230822T120000',
-            'dtend': '20230822T140000',
-        },
-    ],
-}
-
 
 @csrf_exempt
 def well_known_caldav_redirect(request):
@@ -109,14 +83,13 @@ def tasklist_handler(request, calendar_id):
 
     nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
-
-    if calendar_id is 'tasks':
+    if calendar_id == 'tasks':
         for task_id, task in helper.get_tasks():
-            helper.add_todo(multistatus, task, calendar_id, task_id)
+            helper.add_todo(multistatus, calendar_id, task_id, task)
 
-    if calendar_id is 'shoppinglist':
+    if calendar_id == 'shoppinglist':
         for task_id, task in helper.get_shoppingitems():
-            helper.add_todo(multistatus, task, calendar_id, task_id)
+            helper.add_todo(multistatus, calendar_id, task_id, task)
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
     return HttpResponse(xml_str, content_type='application/xml')

@@ -54,7 +54,7 @@ def add_todo(multistatus: etree.Element, calendar_id: str, event_id: str, icalen
 def get_tasks() -> list[Calendar]:
     for task in Task.objects.all():
         todo = Todo()
-        todo['uid'] = task.id
+        todo['uid'] = f"task-{task.id}"
         todo['summary'] = task.name
         if task.done:
             todo['status'] = 'COMPLETED'
@@ -71,24 +71,24 @@ def get_tasks() -> list[Calendar]:
 
 
 def get_shoppingitems() -> list[Calendar]:
-    for task in Item.objects.all():
+    for item in Item.objects.all():
         todo = Todo()
-        todo['uid'] = task.id
-        todo['summary'] = task.name
-        if task.in_cart:
+        todo['uid'] = f"shoppingitem-{item.id}"
+        todo['summary'] = item.name
+        if item.in_cart:
             todo['status'] = 'COMPLETED'
         else:
             todo['status'] = 'NEEDS-ACTION'
 
         cal = Calendar()
         cal.add_component(todo)
-        yield task.id, cal
+        yield item.id, cal
 
 
 def get_task(id: int) -> Calendar:
     task = Task.objects.get(id=id)
     todo = Todo()
-    todo['uid'] = task.id
+    todo['uid'] = f"task-{task.id}"
     todo['summary'] = task.name
     if task.done:
         todo['status'] = 'COMPLETED'
@@ -105,11 +105,11 @@ def get_task(id: int) -> Calendar:
 
 
 def get_shoppingitem(id: int) -> Calendar:
-    task = Item.objects.get(id=id)
+    item = Item.objects.get(id=id)
     todo = Todo()
-    todo['uid'] = task.id
-    todo['summary'] = task.name
-    if task.in_cart:
+    todo['uid'] = f"shoppingitem-{item.id}"
+    todo['summary'] = item.name
+    if item.in_cart:
         todo['status'] = 'COMPLETED'
     else:
         todo['status'] = 'NEEDS-ACTION'
