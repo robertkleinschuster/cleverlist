@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "shopping.apps.ShoppingConfig",
     "inventory.apps.InventoryConfig",
     "todo.apps.TodoConfig",
-    "webdav.apps.WebDAVConfig",
+    "caldav.apps.CaldavConfig"
 ]
 
 MIDDLEWARE = [
@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'caldav.middleware.BasicAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'cleverlist.urls'
