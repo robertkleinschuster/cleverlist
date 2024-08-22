@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('caldav/', views.options_handler, name='caldav_options'),
     path('caldav/principal/', views.principal_handler, name='caldav_principal'),
     path('caldav/home/', views.home_handler, name='caldav_home'),
     path('caldav/<str:calendar_id>/', views.propfind, name='caldav_propfind'),

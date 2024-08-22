@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'caldav.middleware.BasicAuthenticationMiddleware',
+    'caldav.middleware.CaldavMiddleware',
 ]
 
 ROOT_URLCONF = 'cleverlist.urls'

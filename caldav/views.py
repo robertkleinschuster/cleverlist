@@ -30,19 +30,6 @@ TODO_LISTS = {
     ],
 }
 
-
-@csrf_exempt
-def options_handler(request):
-    if request.method == 'OPTIONS':
-        response = HttpResponse()
-        response['Allow'] = 'OPTIONS, PROPFIND, GET'
-        response['DAV'] = '1, 2, calendar-access'
-        response['Content-Length'] = '0'
-        return response
-    else:
-        return HttpResponseNotAllowed(['OPTIONS'])
-
-
 @csrf_exempt
 def well_known_caldav_redirect(request):
     return HttpResponseRedirect('/caldav/principal/')
@@ -86,6 +73,7 @@ def principal_handler(request):
     supported_calendar_component_set = etree.SubElement(
         prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
     )
+    etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VEVENT')
     etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
 
     # Set the status for the propstat

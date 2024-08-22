@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
-class BasicAuthenticationMiddleware(MiddlewareMixin):
+class CaldavMiddleware(MiddlewareMixin):
     def process_request(self, request):
         # Exclude the well-known endpoint from authentication
         if request.path == '/.well-known/caldav':
@@ -11,6 +11,13 @@ class BasicAuthenticationMiddleware(MiddlewareMixin):
 
         # Apply authentication only to /caldav/ paths
         if request.path.startswith('/caldav/'):
+            if request.method == 'OPTIONS':
+                response = HttpResponse()
+                response['Allow'] = 'OPTIONS, PROPFIND, GET'
+                response['DAV'] = '1, 2, calendar-access'
+                response['Content-Length'] = '0'
+                return response
+
             if request.user.is_authenticated:
                 return None
 
