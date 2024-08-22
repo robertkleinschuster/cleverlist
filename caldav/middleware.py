@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
+
 class CaldavMiddleware(MiddlewareMixin):
     def process_request(self, request):
         # Exclude the well-known endpoint from authentication

@@ -30,6 +30,7 @@ TODO_LISTS = {
     ],
 }
 
+
 @csrf_exempt
 def well_known_caldav_redirect(request):
     return HttpResponseRedirect('/caldav/principal/')
@@ -73,7 +74,7 @@ def principal_handler(request):
     supported_calendar_component_set = etree.SubElement(
         prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
     )
-    etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VEVENT')
+    #etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VEVENT')
     etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
 
     # Set the status for the propstat
