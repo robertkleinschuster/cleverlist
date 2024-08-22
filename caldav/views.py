@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
+from caldav import helper
 
 # Create your views here.
 
@@ -94,28 +95,8 @@ def home_handler(request):
     nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
 
-    for calendar_id in TODO_LISTS.keys():
-        response = etree.SubElement(multistatus, '{DAV:}response')
-        href = etree.SubElement(response, '{DAV:}href')
-        href.text = f'/caldav/{calendar_id}/'
-
-        propstat = etree.SubElement(response, '{DAV:}propstat')
-        prop = etree.SubElement(propstat, '{DAV:}prop')
-
-        displayname = etree.SubElement(prop, '{DAV:}displayname')
-        displayname.text = f'To-Do List {calendar_id}'
-
-        resourcetype = etree.SubElement(prop, '{DAV:}resourcetype')
-        etree.SubElement(resourcetype, '{DAV:}collection')
-        etree.SubElement(resourcetype, '{urn:ietf:params:xml:ns:caldav}calendar')
-
-        supported_calendar_component_set = etree.SubElement(
-            prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
-        )
-        etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
-
-        status = etree.SubElement(propstat, '{DAV:}status')
-        status.text = 'HTTP/1.1 200 OK'
+    helper.add_tasklist(multistatus, 'tasks', 'Aufgaben')
+    helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste')
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
     return HttpResponse(xml_str, content_type='application/xml')
@@ -129,39 +110,13 @@ def tasklist_handler(request, calendar_id):
     nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
 
-    todos = TODO_LISTS.get(calendar_id, [])
+    if calendar_id is 'tasks':
+        for task_id, task in helper.get_tasks():
+            helper.add_todo(multistatus, task, calendar_id, task_id)
 
-    for todo in todos:
-        response = etree.SubElement(multistatus, '{DAV:}response')
-        href = etree.SubElement(response, '{DAV:}href')
-        href.text = f'/caldav/{calendar_id}/{todo["uid"]}/'  # Make sure this is correct
-
-        propstat = etree.SubElement(response, '{DAV:}propstat')
-        prop = etree.SubElement(propstat, '{DAV:}prop')
-
-        # Ensure getetag is correct
-        etree.SubElement(prop, '{DAV:}getetag').text = f'"{todo["uid"]}"'
-
-        # Add calendar-data element
-        calendar_data = etree.SubElement(prop, '{urn:ietf:params:xml:ns:caldav}calendar-data')
-
-        # Generate iCalendar data for the VTODO component
-        icalendar_data = (
-            f"BEGIN:VCALENDAR\r\n"
-            f"VERSION:2.0\r\n"
-            f"BEGIN:VTODO\r\n"
-            f"UID:{todo['uid']}\r\n"
-            f"SUMMARY:{todo['summary']}\r\n"
-            f"DTSTART:{todo['dtstart']}\r\n"
-            f"DTEND:{todo['dtend']}\r\n"
-            f"STATUS:NEEDS-ACTION\r\n"  # Add status for incomplete tasks
-            f"END:VTODO\r\n"
-            f"END:VCALENDAR\r\n"
-        )
-        calendar_data.text = icalendar_data  # Ensure this is correct
-
-        status = etree.SubElement(propstat, '{DAV:}status')
-        status.text = 'HTTP/1.1 200 OK'
+    if calendar_id is 'shoppinglist':
+        for task_id, task in helper.get_shoppingitems():
+            helper.add_todo(multistatus, task, calendar_id, task_id)
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
     return HttpResponse(xml_str, content_type='application/xml')
@@ -170,26 +125,16 @@ def tasklist_handler(request, calendar_id):
 @csrf_exempt
 def task_handler(request, calendar_id, event_uid):
     if request.method != 'GET':
-        print('task_handler', request.method)
         return HttpResponseNotAllowed(['GET'])
 
-    todos = TODO_LISTS.get(calendar_id, [])
-    todo = next((t for t in todos if t['uid'] == event_uid), None)
+    calendar = None
+    if calendar_id == 'tasks':
+        calendar = helper.get_task(int(event_uid))
 
-    if todo is None:
-        return HttpResponse(status=404)
+    if calendar_id == 'shoppinglist':
+        calendar = helper.get_shoppingitem(int(event_uid))
 
-    icalendar_data = (
-        f"BEGIN:VCALENDAR\r\n"
-        f"VERSION:2.0\r\n"
-        f"BEGIN:VTODO\r\n"
-        f"UID:{todo['uid']}\r\n"
-        f"SUMMARY:{todo['summary']}\r\n"
-        f"DTSTART:{todo['dtstart']}\r\n"
-        f"DTEND:{todo['dtend']}\r\n"
-        f"STATUS:NEEDS-ACTION\r\n"  # Include task status
-        f"END:VTODO\r\n"
-        f"END:VCALENDAR\r\n"
-    )
+    if calendar is not None:
+        return HttpResponse(calendar.to_ical().decode('utf-8'), content_type='text/calendar')
 
-    return HttpResponse(icalendar_data, content_type='text/calendar')
+    return HttpResponse(status=404)
