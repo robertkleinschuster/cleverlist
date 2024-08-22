@@ -109,7 +109,7 @@ def calendar_from_request(request: HttpRequest) -> Calendar:
     return Calendar.from_ical(request.body)
 
 
-def update_task(id: int, cal: Calendar):
+def change_task(id: int, cal: Calendar):
     if not Task.objects.filter(id=id).exists():
         task = Task.objects.create(
             name=str(id),

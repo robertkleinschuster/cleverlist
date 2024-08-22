@@ -101,7 +101,7 @@ def task_handler(request, calendar_id, event_uid):
 
     if request.method == 'PUT':
         if calendar_id == 'tasks':
-            helper.update_task(id, helper.calendar_from_request(request))
+            helper.change_task(id, helper.calendar_from_request(request))
         if calendar_id == 'shoppinglist':
             helper.update_shoppingitem(id, helper.calendar_from_request(request))
         return HttpResponse(status=204)
