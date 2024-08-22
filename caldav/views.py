@@ -98,6 +98,7 @@ def tasklist_handler(request, calendar_id):
 @csrf_exempt
 def task_handler(request, calendar_id, event_uid):
     if request.method != 'GET':
+        print(request)
         return HttpResponseNotAllowed(['GET'])
 
     calendar = None
