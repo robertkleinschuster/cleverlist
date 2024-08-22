@@ -110,9 +110,16 @@ def calendar_from_request(request: HttpRequest) -> Calendar:
 
 
 def update_task(id: int, cal: Calendar):
-    task = Task.objects.get(id=id)
+    if not Task.objects.filter(id=id).exists():
+        task = Task.objects.create(
+            name=str(id),
+        )
+        changed = True
+    else:
+        task = Task.objects.get(id=id)
+        changed = False
+
     todo = cal.subcomponents[0]
-    changed = False
     if todo['status'] == 'NEEDS-ACTION' and task.done:
         task.done = None
         changed = True
