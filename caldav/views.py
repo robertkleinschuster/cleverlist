@@ -74,7 +74,7 @@ def principal_handler(request):
     supported_calendar_component_set = etree.SubElement(
         prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
     )
-    #etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VEVENT')
+    # etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VEVENT')
     etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
 
     # Set the status for the propstat
@@ -134,14 +134,18 @@ def propfind(request, calendar_id):
     for todo in todos:
         response = etree.SubElement(multistatus, '{DAV:}response')
         href = etree.SubElement(response, '{DAV:}href')
-        href.text = f'/caldav/{calendar_id}/{todo["uid"]}/'
+        href.text = f'/caldav/{calendar_id}/{todo["uid"]}/'  # Make sure this is correct
 
         propstat = etree.SubElement(response, '{DAV:}propstat')
         prop = etree.SubElement(propstat, '{DAV:}prop')
 
+        # Ensure getetag is correct
         etree.SubElement(prop, '{DAV:}getetag').text = f'"{todo["uid"]}"'
+
+        # Add calendar-data element
         calendar_data = etree.SubElement(prop, '{urn:ietf:params:xml:ns:caldav}calendar-data')
 
+        # Generate iCalendar data for the VTODO component
         icalendar_data = (
             f"BEGIN:VCALENDAR\r\n"
             f"VERSION:2.0\r\n"
@@ -150,10 +154,11 @@ def propfind(request, calendar_id):
             f"SUMMARY:{todo['summary']}\r\n"
             f"DTSTART:{todo['dtstart']}\r\n"
             f"DTEND:{todo['dtend']}\r\n"
+            f"STATUS:NEEDS-ACTION\r\n"  # Add status for incomplete tasks
             f"END:VTODO\r\n"
             f"END:VCALENDAR\r\n"
         )
-        calendar_data.text = icalendar_data
+        calendar_data.text = icalendar_data  # Ensure this is correct
 
         status = etree.SubElement(propstat, '{DAV:}status')
         status.text = 'HTTP/1.1 200 OK'
@@ -181,6 +186,7 @@ def get_event(request, calendar_id, event_uid):
         f"SUMMARY:{todo['summary']}\r\n"
         f"DTSTART:{todo['dtstart']}\r\n"
         f"DTEND:{todo['dtend']}\r\n"
+        f"STATUS:NEEDS-ACTION\r\n"  # Include task status
         f"END:VTODO\r\n"
         f"END:VCALENDAR\r\n"
     )
