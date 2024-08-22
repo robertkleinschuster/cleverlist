@@ -133,11 +133,11 @@ def update_task(id: int, cal: Calendar):
         task.name = summary
         changed = True
 
-    if todo['due'] and task.deadline is None:
+    if todo.get('due') and task.deadline is None:
         task.deadline = todo['due'].dt
         changed = True
 
-    if todo['due'] is None and task.deadline:
+    if todo.get('due') is None and task.deadline:
         task.deadline = None
         changed = True
 
