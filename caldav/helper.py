@@ -172,17 +172,17 @@ def change_task(uuid: str, cal: Calendar):
         changed = False
 
     todo = cal.subcomponents[0]
-    if todo['status'] == 'NEEDS-ACTION' and task.done:
+    if todo.get('status') == 'NEEDS-ACTION' and task.done:
         task.done = None
         changed = True
 
-    if todo['status'] == 'COMPLETED' and task.done is None:
+    if todo.get('status') == 'COMPLETED' and task.done is None:
         task.done = timezone.now()
         changed = True
 
-    summary = str(todo['summary'])
+    summary = todo.get('summary')
     if summary and summary != task.name:
-        task.name = summary
+        task.name = str(summary)
         changed = True
 
     if todo.get('due') and task.deadline is None:
@@ -199,7 +199,7 @@ def change_task(uuid: str, cal: Calendar):
 
 def change_shoppingitem_base(uuid: str, cal: Calendar, in_cart_default: bool):
     todo = cal.subcomponents[0]
-    summary = str(todo['summary'])
+    summary = str(todo.get('summary'))
     if ' x ' in summary:
         quantity, name = summary.split(' x ', 2)
     else:
@@ -245,18 +245,18 @@ def change_shoppingitem_base(uuid: str, cal: Calendar, in_cart_default: bool):
 
 def change_shoppingitem(uuid: str, cal: Calendar):
     item, todo = change_shoppingitem_base(uuid, cal, False)
-    if todo['status'] == 'NEEDS-ACTION' and item.in_cart is True:
+    if todo.get('status') == 'NEEDS-ACTION' and item.in_cart is True:
         item.in_cart = False
         item.save()
 
-    if todo['status'] == 'COMPLETED' and item.in_cart is False:
+    if todo.get('status') == 'COMPLETED' and item.in_cart is False:
         item.in_cart = True
         item.save()
 
 
 def change_shoppingcart(uuid: str, cal: Calendar):
     item, todo = change_shoppingitem_base(uuid, cal, True)
-    if todo['status'] == 'COMPLETED' and item.in_cart is True:
+    if todo.get('status') == 'COMPLETED' and item.in_cart is True:
         move_to_inventory(None, None, Item.objects.filter(uuid=uuid))
 
 
@@ -266,7 +266,7 @@ def change_inventory(uuid: str, cal: Calendar):
         return
     todo = cal.subcomponents[0]
 
-    if todo['status'] == 'COMPLETED' and item.stock > 0:
+    if todo.get('status') == 'COMPLETED' and item.stock > 0:
         productstock = item.productstock_set.filter(stock__gt=0).first()
         productstock.stock -= 1
         productstock.save()
