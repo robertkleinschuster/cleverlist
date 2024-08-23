@@ -102,7 +102,7 @@ def tasklist_handler(request, calendar_id):
 
 @csrf_exempt
 def task_handler(request, calendar_id, event_uid):
-    if request.method == 'DElETE':
+    if request.method == 'DELETE':
         if calendar_id == 'tasks':
             helper.delete_task(event_uid)
         if calendar_id == 'shoppinglist':

@@ -14,7 +14,7 @@ class CaldavMiddleware(MiddlewareMixin):
         if request.path.startswith('/caldav/'):
             if request.method == 'OPTIONS':
                 response = HttpResponse()
-                response['Allow'] = 'OPTIONS, PROPFIND, REPORT, GET, PUT, DElETE'
+                response['Allow'] = 'OPTIONS, PROPFIND, REPORT, GET, PUT, DELETE'
                 response['DAV'] = '1, 2, calendar-access'
                 response['Content-Length'] = '0'
                 return response
