@@ -59,7 +59,7 @@ def add_default_tags(sender, instance, created, **kwargs):
             for tag in instance.list.tags.all():
                 if tag not in tags:
                     tags.append(tag)
-        if instance.product.minimumproductstock_set:
+        if instance.product and instance.product.minimumproductstock_set:
             for minstock in instance.product.minimumproductstock_set.all():
                 for tag in minstock.tags.all():
                     if tag not in tags:
