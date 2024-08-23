@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -19,6 +21,7 @@ class Tag(models.Model):
 
 class Product(models.Model):
     pass
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
 

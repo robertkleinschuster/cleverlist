@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import models, transaction
 from django.db.models import OuterRef, Sum, Subquery, Value, F, IntegerField
 from django.db.models.functions import Coalesce, Greatest
@@ -25,6 +27,7 @@ class Location(models.Model):
 
 class ProductStock(models.Model):
     pass
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     product = models.ForeignKey(Product, on_delete=models.RESTRICT, verbose_name=_('Product'))
     location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.RESTRICT, verbose_name=_('Location'))
     stock = models.IntegerField(default=0, verbose_name=_('Stock'))
@@ -81,8 +84,10 @@ class ProductStockManager(models.Manager):
 
         queryset = super().get_queryset()
         queryset = queryset.annotate(
-            stock=Coalesce(Subquery(stock_subquery, output_field=IntegerField()), Value(0,  output_field=IntegerField())),
-            minimum_stock=Coalesce(Subquery(minimum_stock_subquery, output_field=IntegerField()), Value(0,  output_field=IntegerField()))
+            stock=Coalesce(Subquery(stock_subquery, output_field=IntegerField()),
+                           Value(0, output_field=IntegerField())),
+            minimum_stock=Coalesce(Subquery(minimum_stock_subquery, output_field=IntegerField()),
+                                   Value(0, output_field=IntegerField()))
         )
 
         queryset = queryset.annotate(
@@ -104,6 +109,10 @@ class ProductWithStock(Product):
         verbose_name = _("Product with stock")
         verbose_name_plural = _("Products with stock")
         proxy = True
+
+    @property
+    def stock_needed(self):
+        return self.stock_needed
 
 
 @receiver(post_save, sender=MinimumProductStock)

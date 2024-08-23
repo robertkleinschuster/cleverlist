@@ -3,6 +3,7 @@ from django.utils import timezone
 from icalendar import Todo, vDatetime, Calendar
 from lxml import etree
 
+from inventory.models import ProductWithStock
 from shopping.models import Item
 from todo.models import Task
 
@@ -74,6 +75,12 @@ def get_shoppingcart() -> list[Calendar]:
         yield cal.subcomponents[0]['uid'], cal
 
 
+def get_inventory() -> list[Calendar]:
+    for item in ProductWithStock.objects.all():
+        cal = get_inventory_item(item)
+        yield cal.subcomponents[0]['uid'], cal
+
+
 def get_task(uuid_or_task: str | Task) -> Calendar:
     if isinstance(uuid_or_task, Task):
         task = uuid_or_task
@@ -112,6 +119,24 @@ def get_shoppingitem(uuid_or_item: str | Item) -> Calendar:
         todo['status'] = 'NEEDS-ACTION'
 
     todo['description'] = ", ".join([str(tag) for tag in item.tags.all()])
+
+    cal = Calendar()
+    cal.add_component(todo)
+    return cal
+
+
+def get_inventory_item(uuid_or_item: str | ProductWithStock) -> Calendar:
+    if isinstance(uuid_or_item, ProductWithStock):
+        item = uuid_or_item
+    else:
+        item = ProductWithStock.objects.get(uuid=uuid_or_item)
+    todo = Todo()
+    todo['uid'] = item.uuid
+    todo['summary'] = str(item)
+    if item.stock_needed == 0:
+        todo['status'] = 'COMPLETED'
+    else:
+        todo['status'] = 'NEEDS-ACTION'
 
     cal = Calendar()
     cal.add_component(todo)
