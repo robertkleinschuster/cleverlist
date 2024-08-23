@@ -196,6 +196,16 @@ def change_shoppingitem(uuid: str, cal: Calendar):
         item.save()
 
 
+def change_inventory(uuid: str, cal: Calendar):
+    item = ProductWithStock.default_manager.get(uuid=uuid)
+    todo = cal.subcomponents[0]
+
+    if todo['status'] == 'COMPLETED' and item.stock > 0:
+        productstock = item.productstock_set.filter(stock__gt=0).first()
+        productstock.stock -= 1
+        productstock.save()
+
+
 def delete_task(uuid: str):
     Task.objects.get(uuid=uuid).delete()
 

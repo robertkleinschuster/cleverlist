@@ -122,6 +122,9 @@ def task_handler(request, calendar_id: str, event_uid:str):
             helper.change_task(event_uid, helper.calendar_from_request(request))
         if calendar_id == 'shoppinglist':
             helper.change_shoppingitem(event_uid, helper.calendar_from_request(request))
+        if calendar_id == 'inventory':
+            helper.change_inventory(event_uid, helper.calendar_from_request(request))
+
         return HttpResponse(status=204)
     if request.method != 'GET':
         return HttpResponseNotAllowed(['GET'])
