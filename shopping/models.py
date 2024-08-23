@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -21,6 +23,7 @@ class List(models.Model):
 
 class Item(models.Model):
     pass
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     product = models.ForeignKey(Product, on_delete=models.RESTRICT, null=True, blank=True, verbose_name=_('Product'))
     name = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('Name'))
     quantity = models.IntegerField(default=1, verbose_name=_('Quantity'))

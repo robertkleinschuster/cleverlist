@@ -7,7 +7,7 @@ from shopping.models import Item
 from todo.models import Task
 
 
-def add_tasklist(multistatus: etree.Element, id: str, name: str, color = '#FF0000'):
+def add_tasklist(multistatus: etree.Element, id: str, name: str, color='#FF0000'):
     response = etree.SubElement(multistatus, '{DAV:}response')
     href = etree.SubElement(response, '{DAV:}href')
     href.text = f'/caldav/{id}/'
@@ -29,7 +29,6 @@ def add_tasklist(multistatus: etree.Element, id: str, name: str, color = '#FF000
 
     calendar_color = etree.SubElement(prop, '{http://apple.com/ns/ical/}calendar-color')
     calendar_color.text = color  # The color should be a hex value like "#FF0000" for red
-
 
     status = etree.SubElement(propstat, '{DAV:}status')
     status.text = 'HTTP/1.1 200 OK'
@@ -75,13 +74,13 @@ def get_shoppingcart() -> list[Calendar]:
         yield cal.subcomponents[0]['uid'], cal
 
 
-def get_task(id: int | Task) -> Calendar:
-    if isinstance(id, Task):
-        task = id
+def get_task(uuid_or_task: str | Task) -> Calendar:
+    if isinstance(uuid_or_task, Task):
+        task = uuid_or_task
     else:
-        task = Task.objects.get(id=id)
+        task = Task.objects.get(uuid=uuid_or_task)
     todo = Todo()
-    todo['uid'] = f"task-{task.id}"
+    todo['uid'] = task.uuid
     todo['summary'] = str(task)
     if task.done:
         todo['status'] = 'COMPLETED'
@@ -99,13 +98,13 @@ def get_task(id: int | Task) -> Calendar:
     return cal
 
 
-def get_shoppingitem(id: int | Item) -> Calendar:
-    if isinstance(id, Item):
-        item = id
+def get_shoppingitem(uuid_or_item: str | Item) -> Calendar:
+    if isinstance(uuid_or_item, Item):
+        item = uuid_or_item
     else:
-        item = Item.objects.get(id=id)
+        item = Item.objects.get(uuid=uuid_or_item)
     todo = Todo()
-    todo['uid'] = f"shoppingitem-{item.id}"
+    todo['uid'] = item.uuid
     todo['summary'] = str(item)
     if item.in_cart:
         todo['status'] = 'COMPLETED'
@@ -123,14 +122,15 @@ def calendar_from_request(request: HttpRequest) -> Calendar:
     return Calendar.from_ical(request.body)
 
 
-def change_task(id: int, cal: Calendar):
-    if not Task.objects.filter(id=id).exists():
+def change_task(uuid: str, cal: Calendar):
+    if not Task.objects.filter(uuid=uuid).exists():
         task = Task.objects.create(
-            name=str(id),
+            name='',
+            uuid=uuid,
         )
         changed = True
     else:
-        task = Task.objects.get(id=id)
+        task = Task.objects.get(uuid=uuid)
         changed = False
 
     todo = cal.subcomponents[0]
@@ -159,8 +159,8 @@ def change_task(id: int, cal: Calendar):
         task.save()
 
 
-def change_shoppingitem(id: int, cal: Calendar):
-    item = Item.objects.get(id=id)
+def change_shoppingitem(uuid: str, cal: Calendar):
+    item = Item.objects.get(uuid=uuid)
     todo = cal.subcomponents[0]
     if todo['status'] == 'NEEDS-ACTION' and item.in_cart is True:
         item.in_cart = False
@@ -171,9 +171,9 @@ def change_shoppingitem(id: int, cal: Calendar):
         item.save()
 
 
-def delete_task(id: int):
-    Task.objects.get(id=id).delete()
+def delete_task(uuid: str):
+    Task.objects.get(uuid=uuid).delete()
 
 
-def delete_shoppingitem(id: int):
-    Item.objects.get(id=id).delete()
+def delete_shoppingitem(uuid: str):
+    Item.objects.get(uuid=uuid).delete()

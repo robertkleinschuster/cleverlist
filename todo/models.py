@@ -1,3 +1,4 @@
+from uuid import uuid4
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -8,12 +9,11 @@ from shopping.models import List
 # Create your models here.
 class Task(models.Model):
     pass
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255)
     deadline = models.DateTimeField(null=True, blank=True, verbose_name=_('Deadline'))
     done = models.DateTimeField(null=True, blank=True, editable=False, verbose_name=_('Done'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
-    shoppinglist = models.ForeignKey(List, on_delete=models.RESTRICT, null=True, blank=True,
-                                     verbose_name=_('Shopping List'))
 
     def __str__(self):
         return self.name

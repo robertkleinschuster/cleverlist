@@ -102,33 +102,31 @@ def tasklist_handler(request, calendar_id):
 
 @csrf_exempt
 def task_handler(request, calendar_id, event_uid):
-    id = int(event_uid.split('-')[1])
-
     if request.method == 'DElETE':
         if calendar_id == 'tasks':
-            helper.delete_task(id)
+            helper.delete_task(event_uid)
         if calendar_id == 'shoppinglist':
-            helper.delete_shoppingitem(id)
+            helper.delete_shoppingitem(event_uid)
         return HttpResponse(status=204)
 
     if request.method == 'PUT':
         if calendar_id == 'tasks':
-            helper.change_task(id, helper.calendar_from_request(request))
+            helper.change_task(event_uid, helper.calendar_from_request(request))
         if calendar_id == 'shoppinglist':
-            helper.change_shoppingitem(id, helper.calendar_from_request(request))
+            helper.change_shoppingitem(event_uid, helper.calendar_from_request(request))
         return HttpResponse(status=204)
     if request.method != 'GET':
         return HttpResponseNotAllowed(['GET'])
 
     calendar = None
     if calendar_id == 'tasks':
-        calendar = helper.get_task(id)
+        calendar = helper.get_task(event_uid)
 
     if calendar_id == 'shoppinglist':
-        calendar = helper.get_shoppingitem(id)
+        calendar = helper.get_shoppingitem(event_uid)
 
     if calendar_id == 'shoppingcart':
-        calendar = helper.get_shoppingitem(id)
+        calendar = helper.get_shoppingitem(event_uid)
     if calendar is not None:
         return HttpResponse(calendar.to_ical().decode('utf-8'), content_type='text/calendar')
 
