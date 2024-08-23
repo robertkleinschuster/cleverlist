@@ -76,7 +76,7 @@ def get_shoppingcart() -> list[Calendar]:
 
 
 def get_inventory() -> list[Calendar]:
-    for item in ProductWithStock.objects.all():
+    for item in ProductWithStock.default_manager.all():
         cal = get_inventory_item(item)
         yield cal.subcomponents[0]['uid'], cal
 
