@@ -261,7 +261,9 @@ def change_shoppingcart(uuid: str, cal: Calendar):
 
 
 def change_inventory(uuid: str, cal: Calendar):
-    item = ProductWithStock.default_manager.get(uuid=uuid)
+    item = ProductWithStock.default_manager.filter(uuid=uuid).first()
+    if item is None:
+        return
     todo = cal.subcomponents[0]
 
     if todo['status'] == 'COMPLETED' and item.stock > 0:
