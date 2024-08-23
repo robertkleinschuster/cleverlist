@@ -6,6 +6,7 @@ from lxml import etree
 from inventory.admin import add_shopping_item
 from inventory.models import ProductWithStock
 from master.models import Product
+from shopping.admin import move_to_inventory
 from shopping.models import Item
 from todo.models import Task
 
@@ -254,7 +255,9 @@ def change_shoppingitem(uuid: str, cal: Calendar):
 
 
 def change_shoppingcart(uuid: str, cal: Calendar):
-    change_shoppingitem_base(uuid, cal, True)
+    item, todo = change_shoppingitem_base(uuid, cal, True)
+    if todo['status'] == 'COMPLETED' and item.in_cart is True:
+        move_to_inventory(None, None, Item.objects.filter(uuid=uuid))
 
 
 def change_inventory(uuid: str, cal: Calendar):
