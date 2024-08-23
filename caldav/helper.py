@@ -5,6 +5,7 @@ from lxml import etree
 
 from inventory.admin import add_shopping_item
 from inventory.models import ProductWithStock
+from master.models import Product
 from shopping.models import Item
 from todo.models import Task
 
@@ -65,7 +66,7 @@ def get_tasks() -> list[Calendar]:
 
 
 def get_shoppingitems() -> list[Calendar]:
-    for item in Item.objects.prefetch_related('tags').all():
+    for item in Item.objects.prefetch_related('tags').filter(in_cart=False).all():
         cal = get_shoppingitem(item)
         yield cal.subcomponents[0]['uid'], cal
 
@@ -189,9 +190,54 @@ def change_task(uuid: str, cal: Calendar):
         task.save()
 
 
-def change_shoppingitem(uuid: str, cal: Calendar):
-    item = Item.objects.get(uuid=uuid)
+def change_shoppingitem_base(uuid: str, cal: Calendar):
     todo = cal.subcomponents[0]
+    summary = str(todo['summary'])
+    if ' x ' in summary:
+        quantity, name = summary.split(' x ', 2)
+    else:
+        quantity = 1
+        name = summary
+
+    name = str(name)
+
+    if int(quantity) > 0:
+        quantity = int(quantity)
+    else:
+        quantity = 1
+
+    if not Item.objects.filter(uuid=uuid).exists():
+        product = Product.objects.filter(name__iexact=name.strip()).first()
+        if product is not None:
+            name = None
+        else:
+            name = str(name)
+
+        item = Item.objects.create(
+            name=name,
+            product=product,
+            quantity=int(quantity),
+            in_cart=False,
+            uuid=uuid,
+        )
+
+        name = item.name
+    else:
+        item = Item.objects.get(uuid=uuid)
+
+    if item.product is None and len(name) and name != item.name:
+        item.name = name
+        item.save()
+
+    if 0 < quantity != item.quantity:
+        item.quantity = quantity
+        item.save()
+
+    return item, todo
+
+
+def change_shoppingitem(uuid: str, cal: Calendar):
+    item, todo = change_shoppingitem_base(uuid, cal)
     if todo['status'] == 'NEEDS-ACTION' and item.in_cart is True:
         item.in_cart = False
         item.save()
@@ -199,6 +245,10 @@ def change_shoppingitem(uuid: str, cal: Calendar):
     if todo['status'] == 'COMPLETED' and item.in_cart is False:
         item.in_cart = True
         item.save()
+
+
+def change_shoppingcart(uuid: str, cal: Calendar):
+    change_shoppingitem_base(uuid, cal)
 
 
 def change_inventory(uuid: str, cal: Calendar):

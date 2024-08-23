@@ -106,7 +106,7 @@ def tasklist_handler(request, calendar_id):
 
 
 @csrf_exempt
-def task_handler(request, calendar_id: str, event_uid:str):
+def task_handler(request, calendar_id: str, event_uid: str):
     if event_uid.endswith('.ics'):
         event_uid = event_uid[:-4]
 
@@ -115,6 +115,8 @@ def task_handler(request, calendar_id: str, event_uid:str):
             helper.delete_task(event_uid)
         if calendar_id == 'shoppinglist':
             helper.delete_shoppingitem(event_uid)
+        if calendar_id == 'shoppingcart':
+            helper.delete_shoppingitem(event_uid)
         return HttpResponse(status=204)
 
     if request.method == 'PUT':
@@ -122,6 +124,8 @@ def task_handler(request, calendar_id: str, event_uid:str):
             helper.change_task(event_uid, helper.calendar_from_request(request))
         if calendar_id == 'shoppinglist':
             helper.change_shoppingitem(event_uid, helper.calendar_from_request(request))
+        if calendar_id == 'shoppingcart':
+            helper.change_shoppingcart(event_uid, helper.calendar_from_request(request))
         if calendar_id == 'inventory':
             helper.change_inventory(event_uid, helper.calendar_from_request(request))
 
