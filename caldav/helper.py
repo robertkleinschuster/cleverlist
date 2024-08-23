@@ -190,7 +190,7 @@ def change_task(uuid: str, cal: Calendar):
         task.save()
 
 
-def change_shoppingitem_base(uuid: str, cal: Calendar):
+def change_shoppingitem_base(uuid: str, cal: Calendar, in_cart_default: bool):
     todo = cal.subcomponents[0]
     summary = str(todo['summary'])
     if ' x ' in summary:
@@ -217,7 +217,7 @@ def change_shoppingitem_base(uuid: str, cal: Calendar):
             name=name,
             product=product,
             quantity=int(quantity),
-            in_cart=False,
+            in_cart=in_cart_default,
             uuid=uuid,
         )
 
@@ -237,7 +237,7 @@ def change_shoppingitem_base(uuid: str, cal: Calendar):
 
 
 def change_shoppingitem(uuid: str, cal: Calendar):
-    item, todo = change_shoppingitem_base(uuid, cal)
+    item, todo = change_shoppingitem_base(uuid, cal, False)
     if todo['status'] == 'NEEDS-ACTION' and item.in_cart is True:
         item.in_cart = False
         item.save()
@@ -248,7 +248,7 @@ def change_shoppingitem(uuid: str, cal: Calendar):
 
 
 def change_shoppingcart(uuid: str, cal: Calendar):
-    change_shoppingitem_base(uuid, cal)
+    change_shoppingitem_base(uuid, cal, True)
 
 
 def change_inventory(uuid: str, cal: Calendar):
