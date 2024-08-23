@@ -70,9 +70,9 @@ def home_handler(request):
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
 
     helper.add_tasklist(multistatus, 'tasks', 'Aufgaben', '#EE81EE')
-    helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste', '#FFA600')
-    helper.add_tasklist(multistatus, 'shoppingcart', 'Einkaufswagen', '#FFA600')
-    helper.add_tasklist(multistatus, 'inventory', 'Bestand', '#FFA600')
+    helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste 📋', '#FFA600')
+    helper.add_tasklist(multistatus, 'shoppingcart', 'Einkaufswagen 🛒', '#FFA600')
+    helper.add_tasklist(multistatus, 'inventory', 'Bestand 🏠', '#FFA600')
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
     return HttpResponse(xml_str, content_type='application/xml')
