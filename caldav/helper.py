@@ -3,6 +3,7 @@ from django.utils import timezone
 from icalendar import Todo, vDatetime, Calendar
 from lxml import etree
 
+from inventory.admin import add_shopping_item
 from inventory.models import ProductWithStock
 from shopping.models import Item
 from todo.models import Task
@@ -204,6 +205,7 @@ def change_inventory(uuid: str, cal: Calendar):
         productstock = item.productstock_set.filter(stock__gt=0).first()
         productstock.stock -= 1
         productstock.save()
+        add_shopping_item(None, None, ProductWithStock.default_manager.filter(uuid=uuid))
 
 
 def delete_task(uuid: str):
