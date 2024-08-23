@@ -129,11 +129,11 @@ def get_inventory_item(uuid_or_item: str | ProductWithStock) -> Calendar:
     if isinstance(uuid_or_item, ProductWithStock):
         item = uuid_or_item
     else:
-        item = ProductWithStock.objects.get(uuid=uuid_or_item)
+        item = ProductWithStock.default_manager.get(uuid=uuid_or_item)
     todo = Todo()
     todo['uid'] = item.uuid
-    todo['summary'] = f'{item.total_stock} x {item.name}'
-    if item.total_stock == 0:
+    todo['summary'] = f'{item.stock} x {item.name}'
+    if item.stock == 0:
         todo['status'] = 'COMPLETED'
     else:
         todo['status'] = 'NEEDS-ACTION'
