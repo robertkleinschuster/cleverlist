@@ -67,13 +67,13 @@ def get_tasks() -> list[Calendar]:
 
 def get_shoppingitems() -> list[Calendar]:
     for item in Item.objects.prefetch_related('tags').filter(in_cart=False).all():
-        cal = get_shoppingitem(item)
+        cal = get_shoppingitem(item, False)
         yield cal.subcomponents[0]['uid'], cal
 
 
 def get_shoppingcart() -> list[Calendar]:
     for item in Item.objects.prefetch_related('tags').filter(in_cart=True).all():
-        cal = get_shoppingitem(item)
+        cal = get_shoppingitem(item, True)
         yield cal.subcomponents[0]['uid'], cal
 
 
@@ -107,7 +107,7 @@ def get_task(uuid_or_task: str | Task) -> Calendar:
     return cal
 
 
-def get_shoppingitem(uuid_or_item: str | Item) -> Calendar:
+def get_shoppingitem(uuid_or_item: str | Item, is_cart: bool) -> Calendar:
     if isinstance(uuid_or_item, Item):
         item = uuid_or_item
     else:
@@ -115,10 +115,16 @@ def get_shoppingitem(uuid_or_item: str | Item) -> Calendar:
     todo = Todo()
     todo['uid'] = item.uuid
     todo['summary'] = str(item)
-    if item.in_cart:
-        todo['status'] = 'COMPLETED'
+    if is_cart:
+        if item.in_cart:
+            todo['status'] = 'NEEDS-ACTION'
+        else:
+            todo['status'] = 'COMPLETED'
     else:
-        todo['status'] = 'NEEDS-ACTION'
+        if item.in_cart:
+            todo['status'] = 'COMPLETED'
+        else:
+            todo['status'] = 'NEEDS-ACTION'
 
     todo['description'] = ", ".join([str(tag) for tag in item.tags.all()])
 

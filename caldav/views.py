@@ -138,10 +138,10 @@ def task_handler(request, calendar_id: str, event_uid: str):
         calendar = helper.get_task(event_uid)
 
     if calendar_id == 'shoppinglist':
-        calendar = helper.get_shoppingitem(event_uid)
+        calendar = helper.get_shoppingitem(event_uid, False)
 
     if calendar_id == 'shoppingcart':
-        calendar = helper.get_shoppingitem(event_uid)
+        calendar = helper.get_shoppingitem(event_uid, True)
 
     if calendar_id == 'inventory':
         calendar = helper.get_inventory_item(event_uid)
