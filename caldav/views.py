@@ -101,7 +101,10 @@ def tasklist_handler(request, calendar_id):
 
 
 @csrf_exempt
-def task_handler(request, calendar_id, event_uid):
+def task_handler(request, calendar_id: str, event_uid:str):
+    if event_uid.endswith('.ics'):
+        event_uid = event_uid[:-4]
+
     if request.method == 'DELETE':
         if calendar_id == 'tasks':
             helper.delete_task(event_uid)
