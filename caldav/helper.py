@@ -133,7 +133,10 @@ def get_inventory_item(uuid_or_item: str | ProductWithStock) -> Calendar:
         item = ProductWithStock.default_manager.get(uuid=uuid_or_item)
     todo = Todo()
     todo['uid'] = item.uuid
-    todo['summary'] = f'{item.stock} x {item.name} (Mind. {item.minimum_stock})'
+    todo['summary'] = f'{item.stock} x {item.name}'
+    if item.minimum_stock:
+        todo['summary'] += f' (Mind. {item.minimum_stock})'
+
     if item.stock == 0:
         todo['status'] = 'COMPLETED'
     else:
