@@ -133,7 +133,7 @@ def get_inventory_item(uuid_or_item: str | ProductWithStock) -> Calendar:
     todo = Todo()
     todo['uid'] = item.uuid
     todo['summary'] = str(item)
-    if item.stock_needed == 0:
+    if item.stock == 0:
         todo['status'] = 'COMPLETED'
     else:
         todo['status'] = 'NEEDS-ACTION'

@@ -110,10 +110,6 @@ class ProductWithStock(Product):
         verbose_name_plural = _("Products with stock")
         proxy = True
 
-    @property
-    def stock_needed(self):
-        return self.stock_needed
-
 
 @receiver(post_save, sender=MinimumProductStock)
 @receiver(post_save, sender=ProductStock)
