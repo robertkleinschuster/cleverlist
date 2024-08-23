@@ -31,7 +31,7 @@ class TaskAdmin(ListActionModelAdmin):
     list_filter = [('tags', TagFilter), 'done']
     actions = [mark_done, mark_pending]
     list_actions = ['mark_done', 'mark_pending']
-    autocomplete_fields = ['tags', 'shoppinglist']
+    autocomplete_fields = ['tags']
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
