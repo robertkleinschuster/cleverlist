@@ -1,6 +1,8 @@
 from django.db import models
 import uuid
 
+from django.db.models import F
+
 
 # Create your models here.
 class CalDAVTasklist(models.Model):
@@ -12,5 +14,6 @@ class CalDAVTasklist(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        self.sync_token += 1
-        super(CalDAVTasklist, self).save(*args, **kwargs)
+        if self.pk:
+            self.sync_token = F('sync_token') + 1
+        super().save(*args, **kwargs)
