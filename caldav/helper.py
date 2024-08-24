@@ -1,8 +1,11 @@
+import hashlib
+
 from django.http import HttpRequest
 from django.utils import timezone
 from icalendar import Todo, vDatetime, Calendar, Alarm
 from lxml import etree
 
+from caldav.models import CalDAVTasklist
 from inventory.admin import add_shopping_item
 from inventory.models import ProductWithStock
 from master.models import Product
@@ -260,21 +263,33 @@ def change_shoppingitem_base(uuid: str, cal: Calendar, in_cart_default: bool):
     return item, todo
 
 
+def on_change_tasklist(code: str):
+    CalDAVTasklist.objects.update_or_create(
+        code=code,
+        defaults={
+            'etag': hashlib.md5(str(timezone.now()).encode('utf-8')).hexdigest(),
+        }
+    )
+
+
 def change_shoppingitem(uuid: str, cal: Calendar):
     item, todo = change_shoppingitem_base(uuid, cal, False)
     if todo.get('status') == 'NEEDS-ACTION' and item.in_cart is True:
         item.in_cart = False
         item.save()
+        on_change_tasklist('shoppingcart')
 
     if todo.get('status') == 'COMPLETED' and item.in_cart is False:
         item.in_cart = True
         item.save()
+        on_change_tasklist('shoppingcart')
 
 
 def change_shoppingcart(uuid: str, cal: Calendar):
     item, todo = change_shoppingitem_base(uuid, cal, True)
     if todo.get('status') == 'COMPLETED' and item.in_cart is True:
         move_to_inventory(None, None, Item.objects.filter(uuid=uuid))
+        on_change_tasklist('inventory')
 
 
 def change_inventory(uuid: str, cal: Calendar):
@@ -288,6 +303,7 @@ def change_inventory(uuid: str, cal: Calendar):
         productstock.stock -= 1
         productstock.save()
         add_shopping_item(None, None, ProductWithStock.default_manager.filter(uuid=uuid))
+        on_change_tasklist('shoppinglist')
 
 
 def delete_task(uuid: str):

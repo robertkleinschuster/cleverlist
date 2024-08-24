@@ -1,7 +1,6 @@
 import hashlib
 
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
 from caldav import helper
@@ -132,12 +131,7 @@ def task_handler(request, calendar_id: str, event_uid: str):
         event_uid = event_uid[:-4]
 
     if request.method in ['DELETE', 'PUT']:
-        CalDAVTasklist.objects.update_or_create(
-            code=calendar_id,
-            defaults={
-                'etag': hashlib.md5(str(timezone.now()).encode('utf-8')).hexdigest(),
-            }
-        )
+        helper.on_change_tasklist(calendar_id)
 
     if request.method == 'DELETE':
         if calendar_id == 'tasks':
