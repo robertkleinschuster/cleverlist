@@ -2,7 +2,9 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllow
 from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
 from caldav import helper
+import logging
 
+logging.basicConfig(level=logging.ERROR)
 
 # Create your views here.
 
@@ -121,6 +123,7 @@ def task_handler(request, calendar_id: str, event_uid: str):
 
     if request.method == 'PUT':
         if calendar_id == 'tasks':
+            logging.error(request.body.decode('utf-8'))
             helper.change_task(event_uid, helper.calendar_from_request(request))
         if calendar_id == 'shoppinglist':
             helper.change_shoppingitem(event_uid, helper.calendar_from_request(request))
