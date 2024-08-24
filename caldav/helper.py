@@ -11,13 +11,17 @@ from shopping.models import Item
 from todo.models import Task
 
 
-def add_tasklist(multistatus: etree.Element, id: str, name: str, color='#FF0000'):
+def add_tasklist(multistatus: etree.Element, id: str, name: str, color='#FF0000', etag: str = None):
     response = etree.SubElement(multistatus, '{DAV:}response')
     href = etree.SubElement(response, '{DAV:}href')
     href.text = f'/caldav/{id}/'
 
     propstat = etree.SubElement(response, '{DAV:}propstat')
     prop = etree.SubElement(propstat, '{DAV:}prop')
+
+    if etag is not None:
+        etagElem = etree.SubElement(prop, "{DAV:}getetag")
+        etagElem.text = etag
 
     displayname = etree.SubElement(prop, '{DAV:}displayname')
     displayname.text = name

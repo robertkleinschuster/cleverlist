@@ -1,8 +1,13 @@
+import hashlib
+
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
 from caldav import helper
 import logging
+
+from caldav.models import CalDAVTasklist
 
 logging.basicConfig(level=logging.ERROR)
 # Define namespaces
@@ -70,19 +75,33 @@ def home_handler(request):
 
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
 
-    helper.add_tasklist(multistatus, 'tasks', 'Aufgaben', '#EE81EE')
-    helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste 📋', '#FFA600')
-    helper.add_tasklist(multistatus, 'shoppingcart', 'Einkaufswagen 🛒', '#FFA600')
-    helper.add_tasklist(multistatus, 'inventory', 'Bestand 🏠', '#FFA600')
+    etags = {tasklist['code']: tasklist['etag'] for tasklist in CalDAVTasklist.objects.values('code', 'etag').all()}
+
+    home_etag = hashlib.md5(''.join(etags.values()).encode('utf-8')).hexdigest()
+
+    if len(etags.values()) > 0 and request.headers.get('If-None-Match') == home_etag:
+        return HttpResponse(status=304)
+
+    helper.add_tasklist(multistatus, 'tasks', 'Aufgaben', '#EE81EE', etags.get('tasks'))
+    helper.add_tasklist(multistatus, 'shoppinglist', 'Einkaufsliste 📋', '#FFA600', etags.get('shoppinglist'))
+    helper.add_tasklist(multistatus, 'shoppingcart', 'Einkaufswagen 🛒', '#FFA600', etags.get('shoppingcart'))
+    helper.add_tasklist(multistatus, 'inventory', 'Bestand 🏠', '#FFA600', etags.get('inventory'))
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
-    return HttpResponse(xml_str, content_type='application/xml')
+    response = HttpResponse(xml_str, content_type='application/xml')
+    response['ETag'] = home_etag
+    return response
 
 
 @csrf_exempt
 def tasklist_handler(request, calendar_id):
     if request.method not in ['PROPFIND', 'REPORT']:
         return HttpResponseNotAllowed(['PROPFIND', 'REPORT'])
+
+    tasklist = CalDAVTasklist.objects.filter(code=calendar_id).first()
+
+    if tasklist and request.headers.get('If-None-Match') == tasklist.etag:
+        return HttpResponse(status=304)
 
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
     if calendar_id == 'tasks':
@@ -102,13 +121,25 @@ def tasklist_handler(request, calendar_id):
             helper.add_todo(multistatus, calendar_id, task_id, task)
 
     xml_str = etree.tostring(multistatus, pretty_print=True).decode()
-    return HttpResponse(xml_str, content_type='application/xml')
+    response = HttpResponse(xml_str, content_type='application/xml')
+
+    if tasklist is not None:
+        response['ETag'] = tasklist.etag
+    return response
 
 
 @csrf_exempt
 def task_handler(request, calendar_id: str, event_uid: str):
     if event_uid.endswith('.ics'):
         event_uid = event_uid[:-4]
+
+    if request.method in ['DELETE', 'PUT']:
+        CalDAVTasklist.objects.update_or_create(
+            code=calendar_id,
+            defaults={
+                'etag': hashlib.md5(str(timezone.now()).encode('utf-8')).hexdigest(),
+            }
+        )
 
     if request.method == 'DELETE':
         if calendar_id == 'tasks':
@@ -131,6 +162,7 @@ def task_handler(request, calendar_id: str, event_uid: str):
             helper.change_inventory(event_uid, helper.calendar_from_request(request))
 
         return HttpResponse(status=204)
+
     if request.method != 'GET':
         return HttpResponseNotAllowed(['GET'])
 
