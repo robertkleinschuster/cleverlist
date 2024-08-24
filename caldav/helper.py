@@ -107,7 +107,7 @@ def get_task(uuid_or_task: str | Task) -> Calendar:
         todo['due'] = vDatetime(task.deadline)
         alarm = Alarm()
         alarm['action'] = 'DISPLAY'
-        alarm['trigger'] = vDatetime(task.deadline)
+        alarm['trigger'] = '-PT15M'
         todo.add_component(alarm)
 
     todo['description'] = ", ".join([str(tag) for tag in task.tags.all()])
