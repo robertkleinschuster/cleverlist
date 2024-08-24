@@ -183,7 +183,8 @@ def get_inventory_item(uuid_or_item: str | ProductWithStock) -> Calendar:
 
 
 def calendar_from_request(request: HttpRequest) -> Calendar:
-    return Calendar.from_ical(request.body)
+    print(request.body.decode('utf-8'))
+    return Calendar.from_ical(request.body.decode('utf-8'))
 
 
 def change_task(uuid: str, cal: Calendar):
