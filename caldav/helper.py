@@ -31,6 +31,32 @@ def add_tasklist(multistatus: etree.Element, id: str, name: str, color='#FF0000'
     )
     etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
 
+    timezone_ical = """BEGIN:VCALENDAR
+PRODID:-//CleverList//1.0//DE
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Europe/Vienna
+BEGIN:STANDARD
+DTSTART:20231029T020000
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20240331T020000
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+END:DAYLIGHT
+END:VTIMEZONE
+END:VCALENDAR"""
+
+    calendar_timezone = etree.SubElement(prop, '{urn:ietf:params:xml:ns:caldav}calendar-timezone')
+    calendar_timezone.text = timezone_ical
+
     calendar_color = etree.SubElement(prop, '{http://apple.com/ns/ical/}calendar-color')
     calendar_color.text = color  # The color should be a hex value like "#FF0000" for red
 
