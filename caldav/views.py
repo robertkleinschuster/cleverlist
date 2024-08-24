@@ -5,6 +5,8 @@ from caldav import helper
 import logging
 
 logging.basicConfig(level=logging.ERROR)
+# Define namespaces
+nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
 
 
 # Create your views here.
@@ -18,9 +20,6 @@ def well_known_caldav_redirect(request):
 def principal_handler(request):
     if request.method != 'PROPFIND':
         return HttpResponseNotAllowed(['PROPFIND'])
-
-    # Define namespaces
-    nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
 
     # Create the multistatus element
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
@@ -71,7 +70,6 @@ def home_handler(request):
     if request.method != 'PROPFIND':
         return HttpResponseNotAllowed(['PROPFIND'])
 
-    nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
 
     helper.add_tasklist(multistatus, 'tasks', 'Aufgaben', '#EE81EE')
@@ -88,7 +86,6 @@ def tasklist_handler(request, calendar_id):
     if request.method not in ['PROPFIND', 'REPORT']:
         return HttpResponseNotAllowed(['PROPFIND', 'REPORT'])
 
-    nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
     multistatus = etree.Element('{DAV:}multistatus', nsmap=nsmap)
     if calendar_id == 'tasks':
         for task_id, task in helper.get_tasks():

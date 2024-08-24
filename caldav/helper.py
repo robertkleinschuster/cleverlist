@@ -199,7 +199,7 @@ def change_task(uuid: str, cal: Calendar):
         task = Task.objects.get(uuid=uuid)
         changed = False
 
-    todo = cal.subcomponents[0]
+    todo = cal.walk('VTODO')[0]
     if todo.get('status') == 'NEEDS-ACTION' and task.done:
         task.done = None
         changed = True
@@ -226,7 +226,7 @@ def change_task(uuid: str, cal: Calendar):
 
 
 def change_shoppingitem_base(uuid: str, cal: Calendar, in_cart_default: bool):
-    todo = cal.subcomponents[0]
+    todo = cal.walk('VTODO')[0]
     summary = str(todo.get('summary'))
     if ' x ' in summary:
         quantity, name = summary.split(' x ', 2)
@@ -292,7 +292,7 @@ def change_inventory(uuid: str, cal: Calendar):
     item = ProductWithStock.default_manager.filter(uuid=uuid).first()
     if item is None:
         return
-    todo = cal.subcomponents[0]
+    todo = cal.walk('VTODO')[0]
 
     if todo.get('status') == 'COMPLETED' and item.stock > 0:
         productstock = item.productstock_set.filter(stock__gt=0).first()
