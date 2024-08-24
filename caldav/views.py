@@ -5,11 +5,9 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
 from caldav import helper
-import logging
 
 from caldav.models import CalDAVTasklist
 
-logging.basicConfig(level=logging.ERROR)
 # Define namespaces
 nsmap = {'D': 'DAV:', 'C': 'urn:ietf:params:xml:ns:caldav'}
 
@@ -152,7 +150,6 @@ def task_handler(request, calendar_id: str, event_uid: str):
 
     if request.method == 'PUT':
         if calendar_id == 'tasks':
-            logging.error(request.body.decode('utf-8'))
             helper.change_task(event_uid, helper.calendar_from_request(request))
         if calendar_id == 'shoppinglist':
             helper.change_shoppingitem(event_uid, helper.calendar_from_request(request))
