@@ -14,6 +14,7 @@ class Task(models.Model):
     deadline = models.DateTimeField(null=True, blank=True, verbose_name=_('Deadline'))
     done = models.DateTimeField(null=True, blank=True, editable=False, verbose_name=_('Done'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated at'))
 
     def __str__(self):
         return self.name

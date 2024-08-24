@@ -1,6 +1,6 @@
 from django.http import HttpRequest
 from django.utils import timezone
-from icalendar import Todo, vDatetime, Calendar
+from icalendar import Todo, vDatetime, Calendar, Alarm
 from lxml import etree
 
 from inventory.admin import add_shopping_item
@@ -94,6 +94,7 @@ def get_task(uuid_or_task: str | Task) -> Calendar:
     else:
         task = Task.objects.get(uuid=uuid_or_task)
     todo = Todo()
+    todo['dtstamp'] = vDatetime(task.updated_at)
     todo['uid'] = task.uuid
     todo['summary'] = str(task)
     if task.done:
@@ -104,10 +105,16 @@ def get_task(uuid_or_task: str | Task) -> Calendar:
 
     if task.deadline:
         todo['due'] = vDatetime(task.deadline)
+        alarm = Alarm()
+        alarm['action'] = 'DISPLAY'
+        alarm['trigger'] = vDatetime(task.deadline)
+        todo.add_component(alarm)
 
     todo['description'] = ", ".join([str(tag) for tag in task.tags.all()])
 
     cal = Calendar()
+    cal['version'] = '2.0'
+    cal['prodid'] = '-//CleverList//1.0//DE'
     cal.add_component(todo)
     return cal
 
@@ -118,6 +125,7 @@ def get_shoppingitem(uuid_or_item: str | Item, is_cart: bool) -> Calendar:
     else:
         item = Item.objects.get(uuid=uuid_or_item)
     todo = Todo()
+    todo['dtstamp'] = vDatetime(item.updated_at)
     todo['uid'] = item.uuid
     todo['summary'] = str(item)
     if is_cart:
@@ -134,6 +142,8 @@ def get_shoppingitem(uuid_or_item: str | Item, is_cart: bool) -> Calendar:
     todo['description'] = ", ".join([str(tag) for tag in item.tags.all()])
 
     cal = Calendar()
+    cal['version'] = '2.0'
+    cal['prodid'] = '-//CleverList//1.0//DE'
     cal.add_component(todo)
     return cal
 
@@ -144,6 +154,7 @@ def get_inventory_item(uuid_or_item: str | ProductWithStock) -> Calendar:
     else:
         item = ProductWithStock.default_manager.get(uuid=uuid_or_item)
     todo = Todo()
+    todo['dtstamp'] = vDatetime(timezone.now())
     todo['uid'] = item.uuid
     if item.minimum_stock > 0:
         todo['summary'] = f'{item.stock} / {item.minimum_stock} x {item.name}'
@@ -156,6 +167,8 @@ def get_inventory_item(uuid_or_item: str | ProductWithStock) -> Calendar:
         todo['status'] = 'NEEDS-ACTION'
 
     cal = Calendar()
+    cal['version'] = '2.0'
+    cal['prodid'] = '-//CleverList//1.0//DE'
     cal.add_component(todo)
     return cal
 

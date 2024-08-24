@@ -30,6 +30,7 @@ class Item(models.Model):
     list = models.ForeignKey(List, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Shopping List'))
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=_('Tags'))
     in_cart = models.BooleanField(default=False, verbose_name=_('In-Cart'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated at'))
 
     class Meta:
         verbose_name = _('Shopping Item')
