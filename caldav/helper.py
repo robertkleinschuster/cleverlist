@@ -30,7 +30,15 @@ def add_tasklist(multistatus: etree.Element, id: str, name: str, color='#FF0000'
         prop, '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'
     )
     etree.SubElement(supported_calendar_component_set, '{urn:ietf:params:xml:ns:caldav}comp', name='VTODO')
+    add_timezone_prop(prop)
+    calendar_color = etree.SubElement(prop, '{http://apple.com/ns/ical/}calendar-color')
+    calendar_color.text = color  # The color should be a hex value like "#FF0000" for red
 
+    status = etree.SubElement(propstat, '{DAV:}status')
+    status.text = 'HTTP/1.1 200 OK'
+
+
+def add_timezone_prop(prop: etree.Element):
     timezone_ical = """BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
 PRODID:-//Apple Inc.//iOS 14.6//EN
@@ -56,12 +64,6 @@ END:VCALENDAR"""
 
     calendar_timezone = etree.SubElement(prop, '{urn:ietf:params:xml:ns:caldav}calendar-timezone')
     calendar_timezone.text = timezone_ical
-
-    calendar_color = etree.SubElement(prop, '{http://apple.com/ns/ical/}calendar-color')
-    calendar_color.text = color  # The color should be a hex value like "#FF0000" for red
-
-    status = etree.SubElement(propstat, '{DAV:}status')
-    status.text = 'HTTP/1.1 200 OK'
 
 
 def add_todo(multistatus: etree.Element, calendar_id: str, event_id: str, icalendar_data: Calendar):

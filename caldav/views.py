@@ -6,6 +6,7 @@ import logging
 
 logging.basicConfig(level=logging.ERROR)
 
+
 # Create your views here.
 
 @csrf_exempt
@@ -46,6 +47,8 @@ def principal_handler(request):
     # Add displayname
     displayname = etree.SubElement(prop, '{DAV:}displayname')
     displayname.text = 'Cleverlist'
+
+    helper.add_timezone_prop(prop)
 
     # Add supported-calendar-component-set
     supported_calendar_component_set = etree.SubElement(
