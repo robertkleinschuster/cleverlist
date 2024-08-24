@@ -185,12 +185,12 @@ def change_task(uuid: str, cal: Calendar):
         task.name = str(summary)
         changed = True
 
-    if todo.get('due'):
-        task.deadline = todo['due'].dt
-        changed = True
+    due = None
+    if todo.get('due') is not None:
+        due = todo.get('due').dt
 
-    if todo.get('due') is None:
-        task.deadline = None
+    if task.deadline != due:
+        task.deadline = due
         changed = True
 
     if changed:
