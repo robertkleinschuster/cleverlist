@@ -235,13 +235,12 @@ def change_shoppingitem_base(uuid: str, cal: Calendar, in_cart_default: bool):
 
     if not Item.objects.filter(uuid=uuid).exists():
         product = Product.objects.filter(name__iexact=name.strip()).first()
-        if product is not None:
-            name = None
-        else:
-            name = str(name)
+        if product is None:
+            product = Product.objects.create(
+                name=name,
+            )
 
         item = Item.objects.create(
-            name=name,
             product=product,
             quantity=int(quantity),
             in_cart=in_cart_default,
